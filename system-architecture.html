@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Soltreya: System Architecture</title>
+<link rel="icon" href="data:," />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #07080b; --bg-2: #0a0c10; --surface: #0e1117; --surface-2: #13161d;
+    --line: rgba(255,255,255,0.07); --line-2: rgba(255,255,255,0.12);
+    --ink: #eef1f6; --muted: #9aa4b4; --faint: #5e6877;
+    --accent: #6e8efb; --accent-2: #4fd6c0; --warn: #f3b14e; --danger: #ff6f6f;
+    --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    --sans: 'Hanken Grotesk', system-ui, -apple-system, sans-serif;
+    --maxw: 1140px;
+    --ease: cubic-bezier(.22,.61,.36,1);
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-top: 80px; -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink); font-family: var(--sans);
+    line-height: 1.65; font-size: 16px; letter-spacing: 0.005em;
+    -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; overflow-x: hidden;
+  }
+  /* atmosphere */
+  body::before {
+    content: ""; position: fixed; inset: 0; z-index: -2; pointer-events: none;
+    background:
+      radial-gradient(900px 500px at 78% -8%, rgba(110,142,251,0.14), transparent 60%),
+      radial-gradient(760px 520px at 8% 4%, rgba(79,214,192,0.07), transparent 55%),
+      radial-gradient(1px 1px at 20px 20px, rgba(255,255,255,0.045) 1px, transparent 0);
+    background-size: auto, auto, 38px 38px;
+  }
+  body::after {
+    content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none; opacity: 0.025;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  ::selection { background: rgba(110,142,251,0.32); color: #fff; }
+  ::-webkit-scrollbar { width: 11px; height: 11px; }
+  ::-webkit-scrollbar-thumb { background: #20242d; border-radius: 20px; border: 3px solid var(--bg); }
+  ::-webkit-scrollbar-thumb:hover { background: #2b303b; }
+
+  .container { max-width: var(--maxw); margin: 0 auto; padding: 0 28px; }
+  a { color: inherit; }
+
+  .eyebrow {
+    font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--accent); display: inline-flex; align-items: center; gap: 9px;
+  }
+  .eyebrow::before { content: ""; width: 22px; height: 1px; background: var(--accent); opacity: 0.7; }
+
+  /* progress + nav */
+  .progress { position: fixed; top: 0; left: 0; height: 2px; width: 0;
+    background: linear-gradient(90deg, var(--accent), var(--accent-2)); z-index: 100; transition: width .08s linear; }
+  .nav { position: fixed; top: 0; left: 0; right: 0; z-index: 90; height: 60px;
+    background: rgba(7,8,11,0.72); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--line); }
+  .nav .container { height: 100%; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+  .brand { font-family: var(--mono); font-weight: 600; font-size: 13px; letter-spacing: 0.16em;
+    text-transform: uppercase; color: var(--ink); text-decoration: none; white-space: nowrap; }
+  .brand b { color: var(--accent); font-weight: 700; }
+  .brand span { color: var(--faint); font-weight: 400; }
+  .nav-links { display: flex; gap: 4px; align-items: center; }
+  .nav-links a { font-size: 13.5px; color: var(--muted); text-decoration: none; padding: 7px 12px;
+    border-radius: 8px; transition: color .2s var(--ease), background .2s var(--ease); position: relative; }
+  .nav-links a:hover { color: var(--ink); background: rgba(255,255,255,0.04); }
+  .nav-links a.active { color: var(--ink); }
+  .nav-links a.active::after { content: ""; position: absolute; left: 12px; right: 12px; bottom: 1px;
+    height: 2px; background: var(--accent); border-radius: 2px; }
+  @media (max-width: 760px) { .nav-links { display: none; } }
+
+  /* hero */
+  .hero { position: relative; padding: 150px 0 56px; overflow: hidden; }
+  .hero-glow { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.5; z-index: -1; pointer-events: none; }
+  .hero-glow.g1 { width: 520px; height: 360px; right: -80px; top: 40px; background: rgba(110,142,251,0.30); animation: drift 16s var(--ease) infinite alternate; }
+  .hero-glow.g2 { width: 380px; height: 300px; left: -60px; top: 220px; background: rgba(79,214,192,0.16); animation: drift 20s var(--ease) infinite alternate-reverse; }
+  @keyframes drift { from { transform: translate3d(0,0,0); } to { transform: translate3d(-26px, 24px, 0); } }
+  .hero h1 { font-size: clamp(38px, 6.4vw, 70px); line-height: 1.03; letter-spacing: -0.035em;
+    font-weight: 800; margin: 20px 0 0; max-width: 16ch; }
+  .hero h1 .grad { background: linear-gradient(96deg, var(--accent) 10%, var(--accent-2) 92%);
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+  .hero-sub { font-size: clamp(16px, 2vw, 19px); color: var(--muted); max-width: 60ch; margin: 24px 0 0; }
+  .hero-cta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 34px; }
+  .btn { display: inline-flex; align-items: center; gap: 8px; font-family: var(--sans); font-weight: 600;
+    font-size: 14.5px; padding: 12px 20px; border-radius: 11px; text-decoration: none; cursor: pointer;
+    border: 1px solid transparent; transition: transform .18s var(--ease), box-shadow .25s var(--ease), background .2s; }
+  .btn .arr { transition: transform .25s var(--ease); }
+  .btn:hover .arr { transform: translateX(3px); }
+  .btn-primary { background: var(--accent); color: #08091a; box-shadow: 0 8px 28px -10px rgba(110,142,251,0.7); }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 14px 36px -10px rgba(110,142,251,0.85); }
+  .btn-ghost { border-color: var(--line-2); color: var(--ink); background: rgba(255,255,255,0.02); }
+  .btn-ghost:hover { transform: translateY(-2px); border-color: var(--accent); background: rgba(110,142,251,0.08); }
+
+  /* stats */
+  .stats { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0; margin-top: 56px;
+    border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .stat { padding: 22px 18px; border-left: 1px solid var(--line); }
+  .stat:first-child { border-left: none; }
+  .stat .num { font-family: var(--mono); font-weight: 700; font-size: clamp(24px, 3vw, 34px);
+    color: var(--ink); letter-spacing: -0.02em; line-height: 1; }
+  .stat .lab { font-size: 12px; color: var(--muted); margin-top: 8px; letter-spacing: 0.02em; }
+  @media (max-width: 860px) { .stats { grid-template-columns: repeat(3, 1fr); }
+    .stat:nth-child(4) { border-left: none; } }
+  @media (max-width: 480px) { .stats { grid-template-columns: repeat(2, 1fr); }
+    .stat:nth-child(odd) { border-left: none; } }
+
+  /* section bands */
+  .band { padding: 96px 0 0; }
+  .band h2 { font-size: clamp(28px, 4vw, 42px); letter-spacing: -0.028em; font-weight: 700; margin: 16px 0 0; }
+  .band .desc { color: var(--muted); max-width: 60ch; margin: 14px 0 0; font-size: 16.5px; }
+  .rule { height: 1px; background: linear-gradient(90deg, var(--line-2), transparent); margin: 26px 0 6px; }
+
+  .lead { font-size: 18px; color: #cdd5e0; max-width: 64ch; }
+  h3.fig-title { font-size: 21px; font-weight: 600; letter-spacing: -0.01em; margin: 0; }
+  .fig { margin: 40px 0; }
+  .fig-head { display: flex; align-items: baseline; gap: 14px; margin-bottom: 16px; }
+  .fig-head .idx { font-family: var(--mono); font-size: 13px; color: var(--accent); font-weight: 600; }
+  .fig-head .sub { color: var(--faint); font-size: 13.5px; margin-left: auto; font-family: var(--mono); }
+
+  .caption { color: var(--muted); font-size: 14.5px; margin-top: 16px; padding-left: 16px;
+    border-left: 2px solid var(--line-2); line-height: 1.6; }
+  .caption.warn { border-left-color: var(--warn); }
+  .caption.danger { border-left-color: var(--danger); }
+  .caption code, .lead code, p code, li code, td code, .feat p code {
+    font-family: var(--mono); font-size: 0.86em; background: rgba(255,255,255,0.05);
+    padding: 1px 6px; border-radius: 5px; color: #c7cfdc; }
+  .pill { color: var(--warn); font-weight: 600; }
+  b { color: #fff; font-weight: 700; }
+  .lead b, .caption b { color: #fff; }
+
+  /* parts list */
+  ul.parts { list-style: none; padding: 0; margin: 26px 0 0; display: grid; gap: 1px;
+    background: var(--line); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+  ul.parts li { padding: 16px 18px; background: var(--surface); }
+  ul.parts li b { color: var(--accent-2); }
+
+  /* feature grid */
+  .features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 26px; }
+  @media (max-width: 760px) { .features { grid-template-columns: 1fr; } }
+  .feat { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 18px;
+    transition: transform .2s var(--ease), border-color .2s var(--ease); }
+  .feat:hover { transform: translateY(-3px); border-color: var(--line-2); }
+  .feat .k { font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--accent); }
+  .feat p { margin: 8px 0 0; font-size: 14.5px; color: #cdd5e0; }
+
+  /* timeline */
+  .timeline { margin: 28px 0 0; position: relative; padding-left: 30px; }
+  .timeline::before { content: ""; position: absolute; left: 9px; top: 6px; bottom: 6px; width: 1px;
+    background: linear-gradient(180deg, var(--accent), var(--accent-2)); opacity: 0.5; }
+  .step { position: relative; padding: 0 0 22px; }
+  .step::before { content: ""; position: absolute; left: -25px; top: 6px; width: 9px; height: 9px;
+    border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 4px rgba(110,142,251,0.16); }
+  .step p { margin: 0; font-size: 15px; color: #cdd5e0; }
+
+  /* stack grid */
+  .stack { margin-top: 24px; border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+  .srow { display: grid; grid-template-columns: 1.1fr 1.2fr 1.5fr; gap: 16px; padding: 13px 18px;
+    border-top: 1px solid var(--line); transition: background .15s; align-items: baseline; }
+  .srow:first-child { border-top: none; }
+  .srow:hover { background: rgba(255,255,255,0.018); }
+  .srow .c1 { font-family: var(--mono); font-size: 12px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--faint); }
+  .srow .c2 { font-size: 14.5px; color: var(--ink); font-weight: 500; }
+  .srow .c3 { font-size: 13.5px; color: var(--muted); }
+  @media (max-width: 760px) { .srow { grid-template-columns: 1fr; gap: 4px; } .srow .c3 { font-size: 13px; } }
+
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 24px; }
+  @media (max-width: 760px) { .grid2 { grid-template-columns: 1fr; } }
+  .sec { border: 1px solid var(--line); border-radius: 14px; padding: 20px; background: var(--surface); }
+  .sec h4 { margin: 0 0 12px; font-size: 13px; font-family: var(--mono); letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--accent-2); }
+  .sec ul { margin: 0; padding-left: 18px; } .sec li { margin: 7px 0; font-size: 14px; color: #cdd5e0; }
+  .pending { color: var(--warn); }
+
+  footer { margin-top: 90px; padding: 30px 0 70px; border-top: 1px solid var(--line); color: var(--faint); font-size: 13px; }
+  footer .sig { font-family: var(--mono); color: var(--muted); letter-spacing: 0.04em; }
+  footer b { color: var(--ink); font-weight: 600; }
+
+  /* reveal */
+  .reveal { opacity: 0; transform: translateY(20px); transition: opacity .7s var(--ease), transform .7s var(--ease); }
+  .reveal.in { opacity: 1; transform: none; }
+
+  /* ---- workflow block diagrams ---- */
+  .wf { position: relative; margin: 26px 0 6px; --wgap: 13px; }
+  .wf-row { display: flex; align-items: stretch; justify-content: center; gap: var(--wgap); }
+  .wf-row.wf-tail { margin-top: 13px; }
+  .wf-node { position: relative; flex: 1 1 0; min-width: 168px; max-width: 300px;
+    background: var(--surface); border: 1px solid var(--line-2); border-radius: 13px; padding: 13px 15px;
+    transition: transform .18s var(--ease), border-color .18s var(--ease), box-shadow .18s var(--ease); }
+  .wf-node-t { font-family: var(--mono); font-size: 12px; font-weight: 600; letter-spacing: .03em;
+    text-transform: uppercase; color: var(--ink); line-height: 1.32; }
+  .wf-node-s { font-size: 12.5px; color: var(--muted); margin-top: 6px; line-height: 1.5; }
+  .wf-detail { display: none; }
+  .wf-node.click { cursor: pointer; }
+  .wf-node.click:hover { transform: translateY(-2px); border-color: var(--accent);
+    box-shadow: 0 12px 30px -16px rgba(110,142,251,.65); }
+  .wf-node.on { border-color: var(--accent-2); box-shadow: 0 0 0 1px rgba(79,214,192,.4); }
+  .wf-node.acc { border-color: rgba(110,142,251,.45); background: linear-gradient(180deg, rgba(110,142,251,.09), var(--surface)); }
+  .wf-node.acc .wf-node-t { color: var(--accent); }
+  .wf-node.teal { border-color: rgba(79,214,192,.42); background: linear-gradient(180deg, rgba(79,214,192,.08), var(--surface)); }
+  .wf-node.teal .wf-node-t { color: var(--accent-2); }
+  .wf-node.warn { border-color: rgba(243,177,78,.5); background: linear-gradient(180deg, rgba(243,177,78,.09), var(--surface)); }
+  .wf-node.warn .wf-node-t { color: var(--warn); }
+  .wf-node.danger { border-color: rgba(255,111,111,.5); background: linear-gradient(180deg, rgba(255,111,111,.09), var(--surface)); }
+  .wf-node.danger .wf-node-t { color: var(--danger); }
+  .wf-node.db { background: linear-gradient(180deg, var(--surface-2), var(--surface)); border-color: rgba(79,214,192,.32); }
+  .wf-node.db .wf-node-t { color: var(--accent-2); }
+  .wf-node.wide { flex: 0 1 auto; min-width: min(420px, 92%); max-width: 560px; }
+  .wf-arr { flex: 0 0 auto; align-self: center; color: var(--faint); font-size: 17px; line-height: 1; user-select: none; }
+  .wf-down { display: flex; flex-direction: column; align-items: center; gap: 2px; margin: 9px 0; color: var(--faint); }
+  .wf-down .ico { font-size: 17px; line-height: 1; }
+  .wf-down .lbl { font-family: var(--mono); font-size: 10.5px; letter-spacing: .04em; color: var(--faint); }
+  .wf-dot { position: absolute; top: 9px; right: 10px; width: 7px; height: 7px; border-radius: 50%;
+    background: var(--accent); box-shadow: 0 0 0 3px rgba(110,142,251,.16); pointer-events: none; }
+  /* grouped lanes (replace subgraphs) */
+  .wf-lanes { display: grid; grid-template-columns: repeat(auto-fit, minmax(218px, 1fr)); gap: var(--wgap); align-items: start; }
+  .wf-lane { border: 1px solid rgba(110,142,251,.18); border-radius: 14px; padding: 13px 13px 14px; background: rgba(110,142,251,.04); }
+  .wf-lane > .lab { display: block; font-family: var(--mono); font-size: 10.5px; letter-spacing: .12em;
+    text-transform: uppercase; color: var(--accent-2); margin-bottom: 11px; }
+  .wf-stack { display: flex; flex-direction: column; gap: 9px; align-items: stretch; }
+  .wf-stack .wf-arr { align-self: center; }
+  .wf-lane .wf-node { flex: 1 1 auto; min-width: 0; max-width: none; }
+  .wf-note { margin-top: 13px; font-size: 12.5px; color: var(--muted); font-family: var(--mono);
+    display: flex; align-items: center; gap: 8px 10px; justify-content: center; flex-wrap: wrap; text-align: center; line-height: 1.5; }
+  .wf-note .tag { color: var(--accent-2); }
+  /* detail popover */
+  .wf-pop { position: absolute; z-index: 8; width: 300px; max-width: 92%;
+    background: rgba(14,17,23,0.96); backdrop-filter: blur(12px); border: 1px solid rgba(110,142,251,0.5);
+    border-radius: 13px; padding: 14px 16px; box-shadow: 0 18px 50px rgba(0,0,0,0.6); display: none; }
+  .wf-pop h5 { margin: 0 0 7px; font-size: 14px; color: var(--accent-2); padding-right: 18px; font-weight: 700; }
+  .wf-pop p { margin: 0; font-size: 13.5px; color: #cdd5e0; line-height: 1.55; }
+  .wf-pop .x { position: absolute; top: 8px; right: 11px; cursor: pointer; color: var(--faint);
+    font-size: 17px; line-height: 1; border: none; background: none; }
+  .wf-pop .x:hover { color: var(--ink); }
+
+  @media (max-width: 900px) {
+    .wf-row { flex-direction: column; align-items: stretch; }
+    .wf-node, .wf-node.wide { max-width: none; min-width: 0; }
+    .wf-row > .wf-arr { transform: rotate(90deg); align-self: center; margin: 1px 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+    .reveal { opacity: 1; transform: none; }
+  }
+</style>
+</head>
+<body>
+<div class="progress" id="progress"></div>
+
+<nav class="nav">
+  <div class="container">
+    <a class="brand" href="index.html"><b>NICK COMEAUX</b> <span>/ Soltreya</span></a>
+    <div class="nav-links">
+      <a href="index.html">← Home</a>
+      <a href="#simple">Overview</a>
+      <a href="#product">Product</a>
+      <a href="#leadengine">Lead Engine</a>
+      <a href="#stack">Stack</a>
+      <a href="#security">Security</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero" id="top">
+  <div class="hero-glow g1"></div>
+  <div class="hero-glow g2"></div>
+  <div class="container">
+    <div class="eyebrow reveal">Soltreya · System Architecture</div>
+    <h1 class="reveal">A production system that <span class="grad">finds its own leads.</span></h1>
+    <p class="hero-sub reveal">Soltreya sources manufacturers, drafts outreach in my voice, runs the live quality product, and keeps itself running across 17 background jobs behind a four-gate security model. Built and operated end to end by one engineer.</p>
+    <div class="hero-cta reveal">
+      <a class="btn btn-primary" href="#simple">Plain-English tour <span class="arr">→</span></a>
+      <a class="btn btn-ghost" href="#technical">Technical deep-dive <span class="arr">→</span></a>
+    </div>
+
+    <div class="stats" id="stats">
+      <div class="stat reveal"><div class="num" data-count="3">0</div><div class="lab">core systems</div></div>
+      <div class="stat reveal"><div class="num" data-count="17">0</div><div class="lab">background jobs</div></div>
+      <div class="stat reveal"><div class="num" data-count="4">0</div><div class="lab">security gates</div></div>
+      <div class="stat reveal"><div class="num" data-count="8">0</div><div class="lab">system diagrams</div></div>
+      <div class="stat reveal"><div class="num" data-count="1">0</div><div class="lab">engineer</div></div>
+    </div>
+  </div>
+</header>
+
+<main class="container">
+
+  <!-- ============ PART 1 ============ -->
+  <section class="band" id="simple">
+    <div class="eyebrow reveal">Part One</div>
+    <h2 class="reveal">The plain-English tour</h2>
+    <p class="desc reveal">How the whole thing fits together, no jargon. Good for anyone evaluating what I've built.</p>
+    <div class="rule reveal"></div>
+  </section>
+
+  <p class="lead reveal" style="margin-top:30px;">
+    Think of Soltreya as a small business with <b>three working parts and a brain</b>. Everything writes to <b>one shared database</b>, and I'm always the human in the loop. Nothing important goes out without approval.
+  </p>
+  <ul class="parts reveal">
+    <li><b>The brain</b>: decides <i>who</i> to sell to and <i>why</i> (a written strategy).</li>
+    <li><b>Find leads</b>: the Lead Engine hunts for the right factories, writes each a personal intro email, and waits for approval.</li>
+    <li><b>The product</b>: the Quality Hub (live at soltreya.com/hub), where a user logs quality problems and tracks every fix.</li>
+    <li><b>Keeps itself running</b>: scheduled jobs refresh the website, send reminders, and pull in new leads automatically.</li>
+  </ul>
+
+  <div class="fig reveal">
+    <div class="fig-head"><span class="idx">01</span><h3 class="fig-title">The big picture</h3><span class="sub">click any box</span></div>
+    <div class="wf">
+      <div class="wf-row"><div class="wf-node acc wide">
+        <div class="wf-node-t">The strategy brain</div>
+        <div class="wf-node-s">Decides who to sell to and why: small auto-parts factories</div>
+        <div class="wf-detail">A written plan that defines exactly which factories to target and why, so the Lead Engine aims at the right kind of company instead of wasting effort.</div>
+      </div></div>
+      <div class="wf-down"><span class="ico">↓</span><span class="lbl">aims the engine</span></div>
+      <div class="wf-row">
+        <div class="wf-node">
+          <div class="wf-node-t">Public website</div>
+          <div class="wf-node-s">soltreya.com, where visitors book a call</div>
+          <div class="wf-detail">soltreya.com, where prospects learn what Soltreya does and book a discovery call. Those bookings flow into the Lead Engine.</div>
+        </div>
+        <div class="wf-arr">→</div>
+        <div class="wf-node acc">
+          <div class="wf-node-t">1 · Find leads</div>
+          <div class="wf-node-s">Lead Engine finds factories and drafts intros; Nick approves and sends</div>
+          <div class="wf-detail">Software that discovers qualified factories, drafts a personal intro email for each, and queues it for Nick to approve before anything sends.</div>
+        </div>
+        <div class="wf-arr">→</div>
+        <div class="wf-node teal">
+          <div class="wf-node-t">2 · The product</div>
+          <div class="wf-node-s">Quality Hub (soltreya.com/hub), the customer-facing product</div>
+          <div class="wf-detail">The Quality Hub product, live at soltreya.com/hub. Users record quality problems and the system helps assign, fix, and document each one before the deadline.</div>
+        </div>
+      </div>
+      <div class="wf-down"><span class="ico">↓</span></div>
+      <div class="wf-row"><div class="wf-node wide">
+        <div class="wf-node-t">3 · Behind the scenes</div>
+        <div class="wf-node-s">17 scheduled jobs keep all three parts fed and fresh</div>
+        <div class="wf-detail">Seventeen jobs that run on timers, refreshing the website, sending reminders, and pulling in new leads, so the business keeps moving without anyone clicking a button.</div>
+      </div></div>
+      <div class="wf-down"><span class="ico">↓</span><span class="lbl">everything writes to</span></div>
+      <div class="wf-row"><div class="wf-node db wide">
+        <div class="wf-node-t">One shared database</div>
+        <div class="wf-node-s">Supabase: leads, emails, customers, quality events, all in sync</div>
+        <div class="wf-detail">A single secure database (Supabase) storing everything (leads, emails, customers, quality events) so every part of the system stays in sync.</div>
+      </div></div>
+    </div>
+    <div class="caption">The strategy points the Lead Engine at the right factories. Website visitors can book a call. The Quality Hub is the product itself. The scheduled jobs keep all three fed and fresh. Everything shares one database.</div>
+  </div>
+
+  <div class="fig reveal" id="product">
+    <div class="fig-head"><span class="idx">02</span><h3 class="fig-title">The product: Quality Hub</h3><span class="sub">the customer-facing product</span></div>
+    <div class="wf">
+      <div class="wf-row">
+        <div class="wf-node acc"><div class="wf-node-t">Intake</div><div class="wf-node-s">A problem comes in: email, PDF, or typed by hand</div><div class="wf-detail">A quality problem enters by pasting an email, uploading a PDF/Excel, or typing it in. No special format required.</div></div>
+        <div class="wf-arr">→</div>
+        <div class="wf-node"><div class="wf-node-t">AI reads it</div><div class="wf-node-s">Fills in the structured details automatically</div><div class="wf-detail">Claude reads the raw text and automatically fills in the structured details: what happened, how severe, and the part and supplier involved.</div></div>
+        <div class="wf-arr">→</div>
+        <div class="wf-node"><div class="wf-node-t">Human check</div><div class="wf-node-s">A person fixes anything the AI got wrong</div><div class="wf-detail">A person confirms or corrects the AI's draft before saving. Their corrections are recorded so the AI keeps improving.</div></div>
+      </div>
+      <div class="wf-down"><span class="ico">↓</span></div>
+      <div class="wf-row">
+        <div class="wf-node"><div class="wf-node-t">Assign + suggest</div><div class="wf-node-s">Auto-assigns an owner, proposes steps + due dates</div><div class="wf-detail">Routing rules pick the right owner, and the system proposes corrective steps with due dates (containment, corrective, verification).</div></div>
+        <div class="wf-arr">→</div>
+        <div class="wf-node"><div class="wf-node-t">Track to done</div><div class="wf-node-s">Dashboard counts down the 90-day deadline</div><div class="wf-detail">A dashboard shows every open action and what's overdue, counting down to the 90-day deadline carmakers enforce.</div></div>
+        <div class="wf-arr">→</div>
+        <div class="wf-node teal"><div class="wf-node-t">Reminders + exports</div><div class="wf-node-s">Daily nudges · audit-ready PDF / Excel</div><div class="wf-detail">Daily email/Telegram reminders keep actions from slipping, and one click produces an audit-ready PDF or Excel for inspectors.</div></div>
+      </div>
+    </div>
+    <div class="caption">These factories get penalized by carmakers if a fix slips past a 90-day deadline. The Hub's whole job
+      is to make sure nothing falls through the cracks, and to produce the paperwork an auditor wants.</div>
+  </div>
+
+  <div class="fig reveal" id="leadengine">
+    <div class="fig-head"><span class="idx">03</span><h3 class="fig-title">The Lead Engine</h3><span class="sub">how leads get found</span></div>
+    <div class="wf">
+      <div class="wf-row">
+        <div class="wf-node"><div class="wf-node-t">Find factories</div><div class="wf-node-s">Search Midwest + Huntsville metros</div><div class="wf-detail">Searches Google Places for manufacturers across the Midwest IATF belt and the Huntsville corridor.</div></div>
+        <div class="wf-arr">→</div>
+        <div class="wf-node warn"><div class="wf-node-t">Filter wrong-fit</div><div class="wf-node-s">Drops aerospace / defense / medical</div><div class="wf-detail">Automatically drops aerospace, defense, and medical companies (a hard rule while Nick works at Boeing) before anyone is contacted.</div></div>
+        <div class="wf-arr">→</div>
+        <div class="wf-node"><div class="wf-node-t">Score 0–100</div><div class="wf-node-s">Industry, cert, size, location</div><div class="wf-detail">Ranks each surviving company on industry, certification (e.g. IATF 16949), size, and location, so Nick works the best fits first.</div></div>
+        <div class="wf-arr">→</div>
+        <div class="wf-node"><div class="wf-node-t">Find a contact</div><div class="wf-node-s">Hunter.io + the company website</div><div class="wf-detail">Uses Hunter.io plus the company's own website to find a real contact email.</div></div>
+      </div>
+      <div class="wf-down"><span class="ico">↓</span></div>
+      <div class="wf-row">
+        <div class="wf-node"><div class="wf-node-t">AI writes the email</div><div class="wf-node-s">Short, honest intro in Nick's voice</div><div class="wf-detail">Claude writes a short, honest intro in Nick's voice using a verified fact about the company. It can also write follow-ups or re-engagement notes.</div></div>
+        <div class="wf-arr">→</div>
+        <div class="wf-node acc"><div class="wf-node-t">Nick approves</div><div class="wf-node-s">Edit / approve / skip; AI never sends alone</div><div class="wf-detail">Every draft waits in a queue. Nick edits, approves, or skips; the AI never sends on its own.</div></div>
+        <div class="wf-arr">→</div>
+        <div class="wf-node"><div class="wf-node-t">Send from Gmail</div><div class="wf-node-s">Goes out from Nick's own inbox</div><div class="wf-detail">Approved emails go out from Nick's own Gmail so they read as personal, not automated.</div></div>
+        <div class="wf-arr">→</div>
+        <div class="wf-node"><div class="wf-node-t">Track replies</div><div class="wf-node-s">Texts back are auto-sorted by AI</div><div class="wf-detail">Replies (including text messages) are logged and automatically sorted by AI into interested / not / needs-info.</div></div>
+      </div>
+      <div class="wf-down"><span class="ico">↑</span><span class="lbl">feeds the top of the funnel</span></div>
+      <div class="wf-row"><div class="wf-node teal wide"><div class="wf-node-t">⟲ Runs on a schedule</div><div class="wf-node-s">Weekly: auto-find ~15 new factories · Daily: nudge quiet leads</div><div class="wf-detail">Every week it finds ~15 new factories automatically; every day it nudges leads that went quiet.</div></div></div>
+    </div>
+    <div class="caption warn">Two key guardrails: the <span class="pill">filter</span> automatically drops aerospace/defense
+      companies (a hard rule while Nick works at Boeing), and the <span class="pill">approval step</span> means the AI never emails anyone on its own. It drafts, Nick decides.</div>
+  </div>
+
+  <div class="fig reveal">
+    <div class="fig-head"><span class="idx">04</span><h3 class="fig-title">Behind the scenes</h3><span class="sub">the scheduled jobs</span></div>
+    <div class="wf">
+      <div class="wf-row"><div class="wf-node acc wide"><div class="wf-node-t">17 scheduled jobs</div><div class="wf-node-s">Run on timers via Trigger.dev + Vercel Cron</div><div class="wf-detail">Seventeen small automated jobs running on timers (via Trigger.dev and Vercel), grouped by what they keep running.</div></div></div>
+      <div class="wf-down"><span class="ico">↓</span><span class="lbl">grouped by job</span></div>
+      <div class="wf-lanes">
+        <div class="wf-lane"><span class="lab">Keep the website fresh</span><div class="wf-stack">
+          <div class="wf-node"><div class="wf-node-t">Daily</div><div class="wf-node-s">Refresh industry news</div></div>
+          <div class="wf-node"><div class="wf-node-t">Weekly</div><div class="wf-node-s">Refresh demo data</div></div>
+        </div></div>
+        <div class="wf-lane"><span class="lab">Feed the Lead Engine</span><div class="wf-stack">
+          <div class="wf-node"><div class="wf-node-t">Weekly</div><div class="wf-node-s">Pull ~15 new leads</div></div>
+          <div class="wf-node"><div class="wf-node-t">Daily</div><div class="wf-node-s">Follow-ups + re-engage</div><div class="wf-detail">Daily sweeps draft follow-ups for leads with no reply and re-engagement notes for ones that went quiet.</div></div>
+        </div></div>
+        <div class="wf-lane"><span class="lab">Help the product</span><div class="wf-stack">
+          <div class="wf-node"><div class="wf-node-t">Daily</div><div class="wf-node-s">Overdue-action reminders</div></div>
+        </div></div>
+        <div class="wf-lane"><span class="lab">Run the business</span><div class="wf-stack">
+          <div class="wf-node"><div class="wf-node-t">Weekly</div><div class="wf-node-s">Monday brief + client reports</div></div>
+          <div class="wf-node"><div class="wf-node-t">Daily</div><div class="wf-node-s">Uptime + churn checks</div><div class="wf-detail">Pings the live site daily and runs account-health checks so any at-risk account gets attention early.</div></div>
+          <div class="wf-node"><div class="wf-node-t">Monthly</div><div class="wf-node-s">Money snapshot</div></div>
+        </div></div>
+      </div>
+      <div class="wf-row wf-tail"><div class="wf-node teal wide"><div class="wf-node-t">⌨ On demand via Telegram</div><div class="wf-node-s">Nick texts a bot to trigger any job immediately</div><div class="wf-detail">Nick can text a Telegram bot a plain-language instruction and the system runs the matching job immediately.</div></div></div>
+    </div>
+    <div class="caption">Seventeen small jobs run on a schedule: some keep the public site current, some feed the Lead Engine, one sends reminders about overdue work, and others handle weekly reporting and health checks.</div>
+  </div>
+
+  <div class="fig reveal">
+    <div class="fig-head"><span class="idx">·</span><h3 class="fig-title">Who's in control</h3><span class="sub">the safety net</span></div>
+    <div class="features">
+      <div class="feat"><div class="k">Human gate</div><p>A person approves every outbound email. The AI drafts; Nick edits and sends.</p></div>
+      <div class="feat"><div class="k">Auto-reject</div><p>Wrong-fit companies (aerospace/defense, medical) are dropped before anyone is contacted.</p></div>
+      <div class="feat"><div class="k">Spend caps</div><p>Built-in limits stop the AI tools from ever running up a surprise bill.</p></div>
+      <div class="feat"><div class="k">Isolation</div><p>Each customer's data is walled off so one company can never see another's.</p></div>
+      <div class="feat"><div class="k">Secret scanning</div><p>Passwords and keys are scanned automatically so they can't leak into the code.</p></div>
+      <div class="feat"><div class="k">Monitoring</div><p>Errors and downtime are tracked in real time, with alerts straight to my phone.</p></div>
+    </div>
+  </div>
+
+  <div class="fig reveal">
+    <div class="fig-head"><span class="idx">·</span><h3 class="fig-title">How a full cycle works, start to finish</h3></div>
+    <div class="timeline">
+      <div class="step"><p><b>Monday, automatic:</b> a job finds 15 machine shops in Ohio, drops a defense contractor (guardrail), scores the rest, and saves them.</p></div>
+      <div class="step"><p><b>I open the Lead Engine:</b> I pick a high-scoring shop. The AI has already found a contact email and drafted a short, honest intro in my voice using a real fact from their website.</p></div>
+      <div class="step"><p><b>I edit one line and hit send.</b> It goes from my Gmail; a reply (email or text) is logged and auto-sorted.</p></div>
+      <div class="step"><p><b>The shop books a discovery call</b> from the website and later signs a pilot.</p></div>
+      <div class="step"><p><b>Once they're a customer:</b> their quality manager logs a supplier defect into the Quality Hub by pasting an email. The AI fills in the details and suggests an owner plus a corrective action with a due date.</p></div>
+      <div class="step"><p><b>A daily reminder</b> keeps the action from slipping. When it's done, the Hub exports an audit-ready PDF.</p></div>
+    </div>
+  </div>
+
+  <!-- ============ PART 2 ============ -->
+  <section class="band" id="technical">
+    <div class="eyebrow reveal">Part Two</div>
+    <h2 class="reveal">The technical deep-dive</h2>
+    <p class="desc reveal">The same system at engineering depth: stack, topology, the request security model, the lead pipeline, and the data model.</p>
+    <div class="rule reveal"></div>
+  </section>
+
+  <div class="fig reveal" id="stack">
+    <div class="fig-head"><span class="idx">·</span><h3 class="fig-title">Stack at a glance</h3></div>
+    <div class="stack">
+      <div class="srow"><div class="c1">Web app</div><div class="c2">Next.js 15 on Vercel</div><div class="c3">App Router; server actions + route handlers; site, Hub, and Lead Engine</div></div>
+      <div class="srow"><div class="c1">Database</div><div class="c2">Supabase Postgres + Drizzle ORM</div><div class="c3">Shared instance; <code>hub_*</code> and leadgen tables</div></div>
+      <div class="srow"><div class="c1">File storage</div><div class="c2">Supabase Storage</div><div class="c3"><code>hub-attachments</code> bucket, signed URLs (1h)</div></div>
+      <div class="srow"><div class="c1">AI</div><div class="c2">Anthropic Claude <code>claude-sonnet-4-6</code></div><div class="c3">Hub extraction + action drafting; Lead Engine voice drafting + reply classifier</div></div>
+      <div class="srow"><div class="c1">Lead sourcing</div><div class="c2">Google Places API</div><div class="c3">Primary; Apollo optional for contact data</div></div>
+      <div class="srow"><div class="c1">Contact email</div><div class="c2">Hunter.io + site scraper</div><div class="c3">Domain lookup, name-matched</div></div>
+      <div class="srow"><div class="c1">Outbound email</div><div class="c2">Gmail API (OAuth, send-as)</div><div class="c3">Approved drafts only</div></div>
+      <div class="srow"><div class="c1">Inbound replies</div><div class="c2">Twilio SMS webhook</div><div class="c3">HMAC-verified; AI-classified</div></div>
+      <div class="srow"><div class="c1">Hub auth</div><div class="c2">Clerk (email allowlist)</div><div class="c3"><code>HUB_DEV_BYPASS</code> in dev only</div></div>
+      <div class="srow"><div class="c1">Rate-limit store</div><div class="c2">Upstash Redis</div><div class="c3">In-memory fallback per instance</div></div>
+      <div class="srow"><div class="c1">Background jobs</div><div class="c2">Trigger.dev (17) + Vercel Cron (2)</div><div class="c3">Two separate schedulers</div></div>
+      <div class="srow"><div class="c1">Site refresh</div><div class="c2">Trigger.dev → GitHub → Vercel</div><div class="c3">Commits data files; Vercel auto-redeploys</div></div>
+      <div class="srow"><div class="c1">Notifications</div><div class="c2">Telegram · SMTP · Twilio SMS</div><div class="c3">Owner alerts + customer reminders</div></div>
+      <div class="srow"><div class="c1">Monitoring</div><div class="c2">Sentry · gitleaks + GitHub Actions</div><div class="c3">Error tracking; secret scanning in CI + pre-commit</div></div>
+    </div>
+  </div>
+
+  <div class="fig reveal">
+    <div class="fig-head"><span class="idx">05</span><h3 class="fig-title">Where it runs</h3><span class="sub">code → compute</span></div>
+    <div class="wf">
+      <div class="wf-lanes" style="grid-template-columns:repeat(auto-fit,minmax(238px,1fr))">
+        <div class="wf-lane"><span class="lab">Code</span><div class="wf-stack">
+          <div class="wf-node"><div class="wf-node-t">Soltreya monorepo</div><div class="wf-node-s">Python tools + Trigger.dev tasks</div><div class="wf-detail">The monorepo holding the Python tools and the Trigger.dev background tasks (TypeScript).</div></div>
+          <div class="wf-node"><div class="wf-node-t">soltreya-web</div><div class="wf-node-s">Next.js 15 app</div><div class="wf-detail">soltreya-web: the Next.js 15 app (site + Quality Hub + Lead Engine), deployed to Vercel on every git push.</div></div>
+        </div></div>
+        <div class="wf-lane"><span class="lab">Vercel: the web app</span><div class="wf-stack">
+          <div class="wf-node"><div class="wf-node-t">App surfaces</div><div class="wf-node-s">Marketing site · /hub · /internal/leadgen</div><div class="wf-detail">The three user-facing parts of the app: the public marketing site, the /hub Quality Hub, and the internal /internal/leadgen Lead Engine.</div></div>
+          <div class="wf-arr">↓</div>
+          <div class="wf-node"><div class="wf-node-t">API + server actions</div><div class="wf-node-s">/api/*, every request routed first</div><div class="wf-detail">All backend endpoints and server actions; every data request is routed through the security layer first.</div></div>
+          <div class="wf-arr">↓</div>
+          <div class="wf-node acc"><div class="wf-node-t">Security layer</div><div class="wf-node-s">rate-limit · auth · tenant-scope · cost-cap</div><div class="wf-detail">Shared checks every data request passes: rate limiting, authentication, tenant scoping, and cost caps, plus a guard on outbound fetches.</div></div>
+          <div class="wf-node"><div class="wf-node-t">Vercel Cron ×2</div><div class="wf-node-s">Hub reminders + weekly lead pull → API</div><div class="wf-detail">Two scheduled routes (the Hub's daily reminders and the weekly lead pull) guarded by a shared secret.</div></div>
+        </div></div>
+        <div class="wf-lane"><span class="lab">Trigger.dev cloud</span><div class="wf-stack">
+          <div class="wf-node teal"><div class="wf-node-t">17 background tasks</div><div class="wf-node-s">Deployed separately · call back into the app API</div><div class="wf-detail">Runs 17 scheduled and webhook background tasks, deployed separately from the web app; they call back into the app's internal API.</div></div>
+        </div></div>
+      </div>
+      <div class="wf-note">Two deploy targets: <span class="tag">git push → Vercel</span> · <span class="tag">deploy → Trigger.dev</span></div>
+    </div>
+    <div class="caption">Two deploy targets: the Next.js app on Vercel and the background tasks on Trigger.dev. Inside the app,
+      every surface funnels through the API and the shared security layer.</div>
+  </div>
+
+  <div class="fig reveal">
+    <div class="fig-head"><span class="idx">06</span><h3 class="fig-title">Data &amp; services</h3><span class="sub">what the app talks to</span></div>
+    <div class="wf">
+      <div class="wf-row"><div class="wf-node acc wide"><div class="wf-node-t">Security layer</div><div class="wf-node-s">The single chokepoint on every data request</div><div class="wf-detail">The single chokepoint every read or write passes through before touching data or paid services.</div></div></div>
+      <div class="wf-down"><span class="ico">↓</span></div>
+      <div class="wf-lanes">
+        <div class="wf-lane"><span class="lab">Data stores</span><div class="wf-stack">
+          <div class="wf-node db"><div class="wf-node-t">Supabase Postgres</div><div class="wf-node-s">hub_* + leadgen tables</div><div class="wf-detail">The primary database holding both the hub_* tables and the leadgen tables.</div></div>
+          <div class="wf-node db"><div class="wf-node-t">Supabase Storage</div><div class="wf-node-s">hub-attachments, signed URLs</div><div class="wf-detail">Uploaded PDFs/spreadsheets (hub-attachments), served via short-lived signed URLs.</div></div>
+          <div class="wf-node db"><div class="wf-node-t">Upstash Redis</div><div class="wf-node-s">Rate-limit counters</div><div class="wf-detail">Per-IP rate-limit counters shared across instances (falls back to in-memory if not configured).</div></div>
+          <div class="wf-node db"><div class="wf-node-t">Google Sheets</div><div class="wf-node-s">Lightweight reporting surface</div><div class="wf-detail">A lightweight data surface some reporting tasks read from and write to.</div></div>
+          <div class="wf-node db"><div class="wf-node-t">Notion</div><div class="wf-node-s">Tasks, priorities, financials</div><div class="wf-detail">Tasks, priorities, and financial snapshots the automation reads and updates.</div></div>
+        </div></div>
+        <div class="wf-lane"><span class="lab">AI + sourcing</span><div class="wf-stack">
+          <div class="wf-node"><div class="wf-node-t">Anthropic Claude</div><div class="wf-node-s">Extraction, drafting, classifying</div><div class="wf-detail">The AI model (claude-sonnet-4-6) used for extraction, drafting, and reply classification.</div></div>
+          <div class="wf-node"><div class="wf-node-t">Google Places</div><div class="wf-node-s">Discovers target companies</div><div class="wf-detail">The source for discovering manufacturer companies to target.</div></div>
+          <div class="wf-node"><div class="wf-node-t">Hunter.io / Apollo</div><div class="wf-node-s">Finds + enriches contact email</div><div class="wf-detail">Finds and enriches a contact email for each sourced company.</div></div>
+        </div></div>
+        <div class="wf-lane"><span class="lab">Comms + ops</span><div class="wf-stack">
+          <div class="wf-node"><div class="wf-node-t">Gmail</div><div class="wf-node-s">Sends approved outreach</div><div class="wf-detail">Sends approved outreach from Nick's account via OAuth.</div></div>
+          <div class="wf-node"><div class="wf-node-t">Twilio SMS</div><div class="wf-node-s">Inbound replies → verified webhook</div><div class="wf-detail">Sends and receives texts; inbound replies arrive as a signature-verified webhook.</div></div>
+          <div class="wf-node"><div class="wf-node-t">Clerk auth</div><div class="wf-node-s">Hub login, email allowlist</div><div class="wf-detail">Handles Quality Hub login with an email allowlist.</div></div>
+          <div class="wf-node"><div class="wf-node-t">Sentry</div><div class="wf-node-s">Error + performance tracking</div><div class="wf-detail">Captures errors and performance issues in production.</div></div>
+          <div class="wf-node"><div class="wf-node-t">GitHub API</div><div class="wf-node-s">Commits data → auto-redeploy</div><div class="wf-detail">Background tasks commit fresh data files here, which triggers an automatic Vercel redeploy.</div></div>
+        </div></div>
+      </div>
+      <div class="wf-note"><span class="tag">↩ inbound</span> Twilio SMS → security layer · <span class="tag">Trigger.dev</span> syncs Sheets, Notion &amp; commits to GitHub</div>
+    </div>
+    <div class="caption">The security layer is the single chokepoint to data and paid services. Background tasks also sync to
+      Google Sheets and Notion, and commit fresh data to GitHub, which triggers an automatic redeploy.</div>
+  </div>
+
+  <div class="fig reveal" id="security">
+    <div class="fig-head"><span class="idx">07</span><h3 class="fig-title">Request security model</h3><span class="sub">four gates</span></div>
+    <div class="wf">
+      <div class="wf-row"><div class="wf-node wide"><div class="wf-node-t">Incoming request</div><div class="wf-node-s">browser · cron · webhook</div><div class="wf-detail">Any request: a browser action, a scheduled cron, or an external webhook.</div></div></div>
+      <div class="wf-down"><span class="ico">↓</span></div>
+      <div class="wf-row">
+        <div class="wf-node acc"><div class="wf-node-t">1 · Rate limit</div><div class="wf-node-s">per-IP (Upstash, in-memory fallback)</div><div class="wf-detail">Caps how many requests an IP can make (5/hour on public forms, 10/15min on auth) to stop abuse and runaway loops.</div></div>
+        <div class="wf-arr">→</div>
+        <div class="wf-node acc"><div class="wf-node-t">2 · Authenticate</div><div class="wf-node-s">session · bearer · webhook HMAC</div><div class="wf-detail">Proves who's calling: a logged-in session, an internal service token, or a cryptographic webhook signature.</div></div>
+        <div class="wf-arr">→</div>
+        <div class="wf-node acc"><div class="wf-node-t">3 · Tenant scope</div><div class="wf-node-s">every query filtered by tenant</div><div class="wf-detail">Filters every database query to the caller's own tenant, so one customer can never read another's data.</div></div>
+        <div class="wf-arr">→</div>
+        <div class="wf-node acc"><div class="wf-node-t">4 · Cost-cap</div><div class="wf-node-s">paid calls blocked over budget</div><div class="wf-detail">Before any paid AI or enrichment call, checks today's spend against a budget and blocks if it's over.</div></div>
+      </div>
+      <div class="wf-down"><span class="ico">↓</span><span class="lbl">all four gates pass</span></div>
+      <div class="wf-row"><div class="wf-node teal wide"><div class="wf-node-t">Data / action</div><div class="wf-node-s">only now does the request read or change data</div><div class="wf-detail">Only after all four gates pass does the request read or change data.</div></div></div>
+      <div class="wf-row wf-tail"><div class="wf-node danger wide"><div class="wf-node-t">✕ Rejected: fail any gate</div><div class="wf-node-s">429 too-many · 401 unauthorized · 403 forbidden</div><div class="wf-detail">Failing any gate returns a clean error (429 too-many, 401 unauthorized, or 403 forbidden) and never touches data.</div></div></div>
+    </div>
+    <div class="caption danger">Plus a guard on the one place the server fetches external URLs (the lead website
+      scraper): it resolves all A/AAAA records and refuses private, loopback, reserved, and cloud-metadata addresses.</div>
+  </div>
+  <div class="grid2 reveal">
+    <div class="sec">
+      <h4>What protects what</h4>
+      <ul>
+        <li><b>Rate limit</b>: per-IP caps (5/hr on public forms, 10/15min on auth); client IP read from trusted proxy headers</li>
+        <li><b>Auth</b>: timing-safe signature checks for service calls; Clerk-managed sessions for the Hub</li>
+        <li><b>Tenant scope</b>: session required, then every query filtered to the caller's own tenant</li>
+        <li><b>Cost cap</b>: daily spend checked before any paid AI or enrichment call, and logged</li>
+        <li><b>Webhooks</b>: cryptographic signature verification, fail-closed on mismatch</li>
+        <li><b>Outbound fetches</b>: external-URL fetches resolve DNS and refuse private, loopback, reserved, and cloud-metadata addresses</li>
+      </ul>
+    </div>
+    <div class="sec">
+      <h4>Operational hardening</h4>
+      <ul>
+        <li>Automated secret scanning on every commit and in CI</li>
+        <li>Dependency advisories tracked and patched on a regular cadence</li>
+        <li>Documented security runbook and incident process</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="fig reveal">
+    <div class="fig-head"><span class="idx">08</span><h3 class="fig-title">Lead Engine pipeline</h3><span class="sub">source → approve → send → learn</span></div>
+    <div class="wf">
+      <div class="wf-lanes">
+        <div class="wf-lane"><span class="lab">1 · Source + screen</span><div class="wf-stack">
+          <div class="wf-node"><div class="wf-node-t">Google Places</div><div class="wf-node-s">metros × keywords</div><div class="wf-detail">Queries manufacturer keywords across target metros to discover companies.</div></div>
+          <div class="wf-arr">↓</div>
+          <div class="wf-node"><div class="wf-node-t">Website scrape</div><div class="wf-node-s">private-IP guarded</div><div class="wf-detail">Fetches the company site for personalization facts, but first blocks private and internal IP addresses.</div></div>
+          <div class="wf-arr">↓</div>
+          <div class="wf-node warn"><div class="wf-node-t">Guardrail</div><div class="wf-node-s">exclusions.ts drops wrong-fit</div><div class="wf-detail">exclusions.ts rejects aerospace/defense, medical, and dead-era industries before any spend.</div></div>
+          <div class="wf-arr">↓</div>
+          <div class="wf-node"><div class="wf-node-t">Fit score 0–100</div><div class="wf-node-s">sector, cert, headcount, geo, OEM</div><div class="wf-detail">fit-score.ts ranks by sector, certification, headcount, geography, and named OEM customers.</div></div>
+        </div></div>
+        <div class="wf-lane"><span class="lab">2 · Enrich</span><div class="wf-stack">
+          <div class="wf-node"><div class="wf-node-t">Hunter.io email</div><div class="wf-node-s">by domain (+ optional Apollo)</div><div class="wf-detail">Hunter.io (and optionally Apollo) finds a contact email by domain.</div></div>
+          <div class="wf-arr">↓</div>
+          <div class="wf-node"><div class="wf-node-t">Cost-cap preflight</div><div class="wf-node-s">logs to daily_costs</div><div class="wf-detail">Guards the paid Hunter and Claude calls and logs spend to the daily_costs table.</div></div>
+        </div></div>
+        <div class="wf-lane"><span class="lab">3 · Draft + approve</span><div class="wf-stack">
+          <div class="wf-node"><div class="wf-node-t">Claude drafter</div><div class="wf-node-s">first_touch / follow_up / reactivation</div><div class="wf-detail">Generates the email in Nick's voice; the draft kind is first_touch, follow_up, or reactivation.</div></div>
+          <div class="wf-arr">↓</div>
+          <div class="wf-node"><div class="wf-node-t">Approval queue</div><div class="wf-node-s">pending_approval worklist</div><div class="wf-detail">Drafts land as pending_approval in a daily worklist for review.</div></div>
+          <div class="wf-arr">↓</div>
+          <div class="wf-node acc"><div class="wf-node-t">Nick</div><div class="wf-node-s">edit / approve / skip</div><div class="wf-detail">Nick edits, approves, or skips each draft.</div></div>
+        </div></div>
+        <div class="wf-lane"><span class="lab">4 · Send + learn</span><div class="wf-stack">
+          <div class="wf-node"><div class="wf-node-t">Gmail send</div><div class="wf-node-s">store messageId, sentAt</div><div class="wf-detail">Approved drafts send via OAuth; the Gmail message id and send time are stored.</div></div>
+          <div class="wf-arr">↓</div>
+          <div class="wf-node"><div class="wf-node-t">Inbound SMS</div><div class="wf-node-s">Twilio webhook, HMAC verified</div><div class="wf-detail">Replies arrive via Twilio with a verified HMAC signature.</div></div>
+          <div class="wf-arr">↓</div>
+          <div class="wf-node"><div class="wf-node-t">Reply classifier</div><div class="wf-node-s">AI updates lead.status</div><div class="wf-detail">AI reads the reply and updates the lead's status automatically.</div></div>
+        </div></div>
+      </div>
+      <div class="wf-note"><span class="tag">⟲ crons</span> pull (weekly) · enrich · follow-up-sweep · churn-sweep (daily). Stuck / no-reply loops back to re-engage</div>
+    </div>
+    <div class="caption">Sourcing is fully automatic up to the <b>approval queue</b>; sending is gated on Nick. Replies feed a
+      classifier that updates lead status, and quiet leads are swept back into follow-up / reactivation drafts.</div>
+  </div>
+
+  <div class="fig reveal">
+    <div class="fig-head"><span class="idx">09</span><h3 class="fig-title">Core data model</h3><span class="sub">multi-tenant</span></div>
+    <div class="wf">
+      <div class="wf-row"><div class="wf-node db wide"><div class="wf-node-t">TENANTS</div><div class="wf-node-s">a customer account</div><div class="wf-detail">The top of the tree: each tenant is an isolated customer account. Every record below is SQL-scoped to its tenant on every read.</div></div></div>
+      <div class="wf-down"><span class="ico">↓</span><span class="lbl">owns</span></div>
+      <div class="wf-row"><div class="wf-node db wide"><div class="wf-node-t">PROJECTS</div><div class="wf-node-s">a workspace under a tenant</div><div class="wf-detail">A tenant owns one or more projects; leads, pull-runs and daily-costs all hang off a project.</div></div></div>
+      <div class="wf-down"><span class="ico">↓</span><span class="lbl">contains · logs · tracks</span></div>
+      <div class="wf-row">
+        <div class="wf-node db"><div class="wf-node-t">LEADS</div><div class="wf-node-s">status: new → won / lost</div><div class="wf-detail">The sourced companies. leads.status flows new → drafted → contacted → replied → conversation → won / lost / churned, with stuckSince for re-engagement.</div></div>
+        <div class="wf-node db"><div class="wf-node-t">PULL_RUNS</div><div class="wf-node-s">logs each sourcing run</div><div class="wf-detail">A record of each sourcing run for a project: what was pulled, when, and how many leads resulted.</div></div>
+        <div class="wf-node db"><div class="wf-node-t">DAILY_COSTS</div><div class="wf-node-s">tracks per-day spend</div><div class="wf-detail">Tracks paid-API spend per project per day, enforced by the cost-cap preflight.</div></div>
+      </div>
+      <div class="wf-down"><span class="ico">↓</span><span class="lbl">each lead has</span></div>
+      <div class="wf-row">
+        <div class="wf-node db"><div class="wf-node-t">DRAFTS</div><div class="wf-node-s">has outreach</div><div class="wf-detail">Outreach drafts generated for a lead (first_touch / follow_up / reactivation), each pending Nick's approval before send.</div></div>
+        <div class="wf-node db"><div class="wf-node-t">REPLIES</div><div class="wf-node-s">receives</div><div class="wf-detail">Inbound replies received for a lead, classified by AI to update the lead's status.</div></div>
+      </div>
+      <div class="wf-note">Parallel Hub set: <span class="tag">hub_events · hub_actions · hub_routing_rules · hub_members · hub_audit_log · hub_ai_feedback</span></div>
+    </div>
+    <div class="caption">Multi-tenant by design: a <code>tenant</code> owns <code>projects</code>; leads, drafts, replies,
+      pull-runs and daily-costs all hang off a project and are SQL-scoped to the tenant on every read.
+      <code>leads.status</code>: new → drafted → contacted → replied → conversation → won / lost / churned (with <code>stuckSince</code> for re-engagement).
+      The Quality Hub uses a parallel set: <code>hub_events</code>, <code>hub_actions</code>, <code>hub_routing_rules</code>,
+      <code>hub_members</code>, <code>hub_audit_log</code>, <code>hub_ai_feedback</code>.</div>
+  </div>
+
+  <div class="fig reveal">
+    <div class="fig-head"><span class="idx">·</span><h3 class="fig-title">Scheduling &amp; the self-refresh loop</h3></div>
+    <div class="grid2" style="margin-top:0;">
+      <div class="sec">
+        <h4>Two schedulers</h4>
+        <ul>
+          <li><b>Vercel Cron (2):</b> Hub reminders (daily 12:00 UTC) and the weekly lead pull (Mon 13:00 UTC); route handlers guarded by a shared secret.</li>
+          <li><b>Trigger.dev (17):</b> everything else: refresh-signals, refresh-demo, weekly-report, daily-risk-check, monthly-financials, leadgen pulls / sheet-sync / follow-up-sweep / churn-sweep, telegram-agent (webhook), and more.</li>
+        </ul>
+      </div>
+      <div class="sec">
+        <h4>Site stays fresh without a deploy</h4>
+        <ul>
+          <li>A Trigger.dev task generates data (industry signals, demo events) with Claude.</li>
+          <li>It commits the JSON to the site repo via the GitHub API using a scoped token.</li>
+          <li>Vercel's git integration sees the commit and redeploys automatically.</li>
+          <li>Idempotent: identical content is skipped (no redeploy churn).</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="sig">Designed &amp; built by <b>Nick Comeaux</b> · Soltreya</div>
+    <div style="margin-top:6px;">Generated from the live codebase (soltreya-web + src/trigger) on 2026-06-23; last updated 2026-06-29. Every box in a diagram is clickable for a fuller description.</div>
+  </footer>
+
+</main>
+
+<script type="module">
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  initUX();
+  initWorkflows();
+
+  function initUX() {
+    // progress bar
+    const prog = document.getElementById('progress');
+    const onScroll = () => {
+      const h = document.documentElement;
+      const max = h.scrollHeight - h.clientHeight;
+      prog.style.width = (max > 0 ? (h.scrollTop / max) * 100 : 0) + '%';
+    };
+    window.addEventListener('scroll', onScroll, { passive: true }); onScroll();
+
+    // reveal + count-up
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (!e.isIntersecting) return;
+        e.target.classList.add('in');
+        if (e.target.classList.contains('stat')) countUp(e.target.querySelector('.num'));
+        io.unobserve(e.target);
+      });
+    }, { threshold: 0.14, rootMargin: '0px 0px -6% 0px' });
+    document.querySelectorAll('.reveal').forEach((el, i) => {
+      // gentle stagger for siblings sharing a parent
+      el.style.transitionDelay = Math.min((i % 6) * 45, 220) + 'ms';
+      io.observe(el);
+    });
+
+    function countUp(el) {
+      if (!el) return;
+      const to = +el.dataset.count, pre = el.dataset.prefix || '', suf = el.dataset.suffix || '';
+      if (reduce || !to) { el.textContent = pre + to + suf; return; }
+      const dur = 1100, t0 = performance.now();
+      const tick = (t) => {
+        const p = Math.min((t - t0) / dur, 1), e = 1 - Math.pow(1 - p, 3);
+        el.textContent = pre + Math.round(to * e) + suf;
+        if (p < 1) requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    }
+
+    // scroll-spy — pair each link to its in-page section by identity (no index drift),
+    // and force the last section active when scrolled to the bottom.
+    const links = Array.from(document.querySelectorAll('.nav-links a'));
+    const items = links.map(a => {
+      const href = a.getAttribute('href') || '';
+      const sec = href.charAt(0) === '#' && href.length > 1 ? document.getElementById(href.slice(1)) : null;
+      return sec ? { a, sec } : null;
+    }).filter(Boolean);
+    const spy = () => {
+      // active = the section whose top is the lowest one still at/above the trigger line —
+      // chosen by position, not array order, so nav order never has to match document order.
+      let active = null, best = -Infinity;
+      items.forEach(it => {
+        const top = it.sec.getBoundingClientRect().top;
+        if (top <= 120 && top > best) { best = top; active = it.a; }
+      });
+      // at the bottom, the last section may be too short to reach the trigger line — force it
+      if (items.length && window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2) {
+        active = items.reduce((lo, it) => it.sec.getBoundingClientRect().top > lo.sec.getBoundingClientRect().top ? it : lo).a;
+      }
+      links.forEach(a => a.classList.toggle('active', a === active));
+    };
+    window.addEventListener('scroll', spy, { passive: true });
+    window.addEventListener('resize', spy, { passive: true }); spy();
+  }
+
+  function initWorkflows() {
+    const closers = [];
+    const closeAll = () => closers.forEach(c => c());
+
+    document.querySelectorAll('.wf').forEach(wf => {
+      const pop = document.createElement('div');
+      pop.className = 'wf-pop';
+      pop.innerHTML = '<button class="x" aria-label="Close">×</button><h5></h5><p></p>';
+      wf.appendChild(pop);
+      const popH5 = pop.querySelector('h5'), popP = pop.querySelector('p');
+      const close = () => { pop.style.display = 'none';
+        wf.querySelectorAll('.wf-node.on').forEach(n => n.classList.remove('on')); };
+      closers.push(close);
+      pop.querySelector('.x').addEventListener('click', (e) => { e.stopPropagation(); close(); });
+
+      wf.querySelectorAll('.wf-node').forEach(node => {
+        const det = node.querySelector('.wf-detail');
+        if (!det || !det.textContent.trim()) return;
+        node.classList.add('click');
+        const dot = document.createElement('span'); dot.className = 'wf-dot'; node.appendChild(dot);
+        node.addEventListener('click', () => {
+          const wasOpen = node.classList.contains('on');
+          closeAll();
+          if (wasOpen) return;
+          const tEl = node.querySelector('.wf-node-t');
+          popH5.textContent = tEl ? tEl.textContent : '';
+          popP.textContent = det.textContent;
+          pop.style.display = 'block';
+          node.classList.add('on');
+          const wr = wf.getBoundingClientRect(), nr = node.getBoundingClientRect();
+          const pw = pop.offsetWidth, ph = pop.offsetHeight;
+          let x = (nr.left - wr.left) + nr.width / 2 - pw / 2;
+          let y = (nr.bottom - wr.top) + 8;
+          x = Math.max(8, Math.min(x, wf.clientWidth - pw - 8));
+          if (y + ph > wf.clientHeight - 4) y = (nr.top - wr.top) - ph - 8;
+          y = Math.max(8, y);
+          pop.style.left = x + 'px'; pop.style.top = y + 'px';
+        });
+      });
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.wf-node.click') && !e.target.closest('.wf-pop')) closeAll();
+    });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeAll(); });
+    let rt; window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(closeAll, 120); });
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Nick Comeaux | Systems & AI Engineer</title>
+<meta name="description" content="Systems and industrial engineer turned AI builder. I design and deploy agentic AI systems that run in production. Tesla and Boeing background, Texas A&M ISE, founder of Soltreya." />
+<link rel="icon" href="data:," />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #07080b; --bg-2: #0a0c10; --surface: #0e1117; --surface-2: #13161d;
+    --line: rgba(255,255,255,0.07); --line-2: rgba(255,255,255,0.12);
+    --ink: #eef1f6; --muted: #9aa4b4; --faint: #5e6877;
+    --accent: #6e8efb; --accent-2: #4fd6c0; --warn: #f3b14e;
+    --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    --sans: 'Hanken Grotesk', system-ui, -apple-system, sans-serif;
+    --maxw: 1080px; --ease: cubic-bezier(.22,.61,.36,1);
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-top: 80px; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--sans);
+    line-height: 1.65; font-size: 16px; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+  body::before { content: ""; position: fixed; inset: 0; z-index: -2; pointer-events: none;
+    background:
+      radial-gradient(900px 520px at 80% -10%, rgba(110,142,251,0.15), transparent 60%),
+      radial-gradient(760px 520px at 6% 6%, rgba(79,214,192,0.07), transparent 55%),
+      radial-gradient(1px 1px at 20px 20px, rgba(255,255,255,0.045) 1px, transparent 0);
+    background-size: auto, auto, 38px 38px; }
+  body::after { content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none; opacity: 0.025;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+  ::selection { background: rgba(110,142,251,0.32); color: #fff; }
+  ::-webkit-scrollbar { width: 11px; }
+  ::-webkit-scrollbar-thumb { background: #20242d; border-radius: 20px; border: 3px solid var(--bg); }
+  a { color: inherit; }
+  .container { max-width: var(--maxw); margin: 0 auto; padding: 0 28px; }
+
+  .eyebrow { font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--accent); display: inline-flex; align-items: center; gap: 9px; }
+  .eyebrow::before { content: ""; width: 22px; height: 1px; background: var(--accent); opacity: 0.7; }
+
+  .progress { position: fixed; top: 0; left: 0; height: 2px; width: 0;
+    background: linear-gradient(90deg, var(--accent), var(--accent-2)); z-index: 100; transition: width .08s linear; }
+  .nav { position: fixed; top: 0; left: 0; right: 0; z-index: 90; height: 60px;
+    background: rgba(7,8,11,0.72); backdrop-filter: blur(14px); border-bottom: 1px solid var(--line); }
+  .nav .container { height: 100%; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+  .brand { font-family: var(--mono); font-weight: 600; font-size: 13px; letter-spacing: 0.16em;
+    text-transform: uppercase; text-decoration: none; white-space: nowrap; }
+  .brand b { color: var(--accent); }
+  .nav-links { display: flex; gap: 4px; align-items: center; }
+  .nav-links a { font-size: 13.5px; color: var(--muted); text-decoration: none; padding: 7px 12px;
+    border-radius: 8px; transition: color .2s, background .2s; position: relative; }
+  .nav-links a:hover { color: var(--ink); background: rgba(255,255,255,0.04); }
+  .nav-links a.active { color: var(--ink); }
+  .nav-links a.active::after { content: ""; position: absolute; left: 12px; right: 12px; bottom: 1px;
+    height: 2px; background: var(--accent); border-radius: 2px; }
+  .nav-cta { font-size: 13px; font-weight: 600; padding: 7px 14px; border-radius: 9px;
+    border: 1px solid var(--line-2); text-decoration: none; color: var(--ink); transition: border-color .2s, background .2s; }
+  .nav-cta:hover { border-color: var(--accent); background: rgba(110,142,251,0.08); }
+  @media (max-width: 820px) { .nav-links { display: none; } }
+
+  .hero { position: relative; padding: 156px 0 60px; overflow: hidden; }
+  .hero-glow { position: absolute; border-radius: 50%; filter: blur(82px); opacity: 0.5; z-index: -1; }
+  .hero-glow.g1 { width: 540px; height: 360px; right: -90px; top: 50px; background: rgba(110,142,251,0.30); animation: drift 16s var(--ease) infinite alternate; }
+  .hero-glow.g2 { width: 380px; height: 300px; left: -70px; top: 230px; background: rgba(79,214,192,0.16); animation: drift 20s var(--ease) infinite alternate-reverse; }
+  @keyframes drift { from { transform: translate3d(0,0,0); } to { transform: translate3d(-26px,22px,0); } }
+  .hero h1 { font-size: clamp(40px, 6.6vw, 72px); line-height: 1.02; letter-spacing: -0.035em;
+    font-weight: 800; margin: 20px 0 0; max-width: 17ch; }
+  .hero h1 .grad { background: linear-gradient(96deg, var(--accent) 8%, var(--accent-2) 92%);
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+  .hero-sub { font-size: clamp(16px, 2vw, 19px); color: var(--muted); max-width: 62ch; margin: 24px 0 0; }
+  .hero-cta { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-top: 34px; }
+  .btn { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; font-size: 14.5px;
+    padding: 12px 20px; border-radius: 11px; text-decoration: none; cursor: pointer; border: 1px solid transparent;
+    transition: transform .18s var(--ease), box-shadow .25s var(--ease), background .2s, border-color .2s; }
+  .btn .arr { transition: transform .25s var(--ease); }
+  .btn:hover .arr { transform: translateX(3px); }
+  .btn-primary { background: var(--accent); color: #08091a; box-shadow: 0 8px 28px -10px rgba(110,142,251,0.7); }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 14px 36px -10px rgba(110,142,251,0.85); }
+  .btn-ghost { border-color: var(--line-2); color: var(--ink); background: rgba(255,255,255,0.02); }
+  .btn-ghost:hover { transform: translateY(-2px); border-color: var(--accent); background: rgba(110,142,251,0.08); }
+  .iconlinks { display: flex; gap: 4px; margin-left: 4px; }
+  .iconlinks a { font-size: 13px; color: var(--muted); text-decoration: none; padding: 9px 11px; border-radius: 9px;
+    border: 1px solid var(--line); transition: color .2s, border-color .2s; }
+  .iconlinks a:hover { color: var(--ink); border-color: var(--accent); }
+
+  .stats { display: grid; grid-template-columns: repeat(6, 1fr);
+    border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); margin-top: 56px; }
+  .stat { padding: 22px 16px; border-left: 1px solid var(--line); }
+  .stat:first-child { border-left: none; }
+  .stat .num { font-family: var(--mono); font-weight: 700; font-size: clamp(22px, 2.8vw, 31px);
+    color: var(--ink); letter-spacing: -0.02em; line-height: 1; }
+  .stat .lab { font-size: 11.5px; color: var(--muted); margin-top: 8px; }
+  @media (max-width: 860px) { .stats { grid-template-columns: repeat(3, 1fr); } .stat:nth-child(4) { border-left: none; } }
+  @media (max-width: 460px) { .stats { grid-template-columns: repeat(2, 1fr); } .stat:nth-child(odd) { border-left: none; } }
+
+  section.block { padding: 92px 0 0; }
+  .block h2 { font-size: clamp(27px, 4vw, 40px); letter-spacing: -0.028em; font-weight: 700; margin: 14px 0 0; }
+  .block .desc { color: var(--muted); max-width: 60ch; margin: 12px 0 0; }
+  .rule { height: 1px; background: linear-gradient(90deg, var(--line-2), transparent); margin: 24px 0 0; }
+  .lead { font-size: 18px; color: #cdd5e0; max-width: 66ch; }
+  b { color: #fff; font-weight: 700; }
+
+  /* timeline */
+  .tl { margin-top: 34px; position: relative; padding-left: 30px; }
+  .tl::before { content: ""; position: absolute; left: 8px; top: 8px; bottom: 8px; width: 1px;
+    background: linear-gradient(180deg, var(--accent), var(--accent-2)); opacity: 0.5; }
+  .job { position: relative; padding-bottom: 34px; }
+  .job::before { content: ""; position: absolute; left: -26px; top: 6px; width: 10px; height: 10px;
+    border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 4px rgba(110,142,251,0.16); }
+  .job .top { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 12px; }
+  .job .role { font-size: 18px; font-weight: 700; }
+  .job .org { color: var(--accent); font-weight: 600; }
+  .job .when { margin-left: auto; font-family: var(--mono); font-size: 12px; color: var(--faint); }
+  .job ul { margin: 10px 0 0; padding-left: 18px; }
+  .job li { margin: 6px 0; color: #cdd5e0; font-size: 15px; }
+  .job li b { color: #fff; }
+
+  /* projects */
+  .feature { margin-top: 34px; border: 1px solid var(--line); border-radius: 18px; overflow: hidden;
+    background: linear-gradient(180deg, rgba(110,142,251,0.06), transparent 40%), var(--surface);
+    transition: border-color .25s var(--ease), transform .25s var(--ease); }
+  .feature:hover { border-color: var(--line-2); }
+  .feature .pad { padding: 28px; }
+  .feature .tag { font-family: var(--mono); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent-2); }
+  .feature h3 { font-size: 26px; letter-spacing: -0.02em; margin: 10px 0 0; }
+  .feature p { color: #cdd5e0; max-width: 70ch; margin: 12px 0 0; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+  .chip { font-family: var(--mono); font-size: 12px; color: var(--muted); border: 1px solid var(--line);
+    border-radius: 999px; padding: 5px 12px; }
+  .chip b { color: var(--accent); }
+  .feature .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 22px; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px; }
+  @media (max-width: 760px) { .grid-2 { grid-template-columns: 1fr; } }
+  .pcard { border: 1px solid var(--line); border-radius: 14px; padding: 22px; background: var(--surface);
+    transition: transform .2s var(--ease), border-color .2s; }
+  .pcard:hover { transform: translateY(-3px); border-color: var(--line-2); }
+  .pcard .tag { font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); }
+  .pcard h3 { font-size: 18px; margin: 8px 0 0; }
+  .pcard p { color: #cdd5e0; font-size: 14.5px; margin: 8px 0 0; }
+
+  /* skills */
+  .skills { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-top: 30px; }
+  @media (max-width: 760px) { .skills { grid-template-columns: 1fr; } }
+  .skgroup { border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px; background: var(--surface); }
+  .skgroup h4 { margin: 0 0 12px; font-family: var(--mono); font-size: 12px; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--accent-2); }
+  .tags { display: flex; flex-wrap: wrap; gap: 7px; }
+  .tags span { font-size: 13px; color: #cdd5e0; background: rgba(255,255,255,0.04); border: 1px solid var(--line);
+    border-radius: 8px; padding: 5px 10px; }
+
+  /* education + contact */
+  .edu { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 30px; }
+  @media (max-width: 760px) { .edu { grid-template-columns: 1fr; } }
+  .edu .card { border: 1px solid var(--line); border-radius: 14px; padding: 20px; background: var(--surface); }
+  .edu .card .h { font-weight: 700; font-size: 16px; }
+  .edu .card .s { color: var(--muted); font-size: 14px; margin-top: 4px; }
+  .edu .card .m { font-family: var(--mono); font-size: 12px; color: var(--faint); margin-top: 8px; }
+
+  .contact { margin-top: 34px; border: 1px solid var(--line); border-radius: 18px; padding: 34px;
+    background: linear-gradient(180deg, rgba(79,214,192,0.06), transparent 50%), var(--surface); text-align: center; }
+  .contact h3 { font-size: clamp(22px, 3vw, 30px); letter-spacing: -0.02em; margin: 0; }
+  .contact p { color: var(--muted); margin: 10px auto 0; max-width: 52ch; }
+  .contact .actions { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin-top: 24px; }
+
+  footer { margin-top: 90px; padding: 30px 0 70px; border-top: 1px solid var(--line); color: var(--faint); font-size: 13px;
+    display: flex; flex-wrap: wrap; gap: 8px; justify-content: space-between; }
+  footer .sig { font-family: var(--mono); color: var(--muted); }
+
+  .reveal { opacity: 0; transform: translateY(20px); transition: opacity .7s var(--ease), transform .7s var(--ease); }
+  .reveal.in { opacity: 1; transform: none; }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } .reveal { opacity: 1; transform: none; } }
+</style>
+</head>
+<body>
+<div class="progress" id="progress"></div>
+
+<nav class="nav">
+  <div class="container">
+    <a class="brand" href="#top"><b>NICK</b> COMEAUX</a>
+    <div class="nav-links">
+      <a href="#about">About</a>
+      <a href="#experience">Experience</a>
+      <a href="#work">Work</a>
+      <a href="#skills">Skills</a>
+      <a href="#contact">Contact</a>
+    </div>
+    <a class="nav-cta" href="resume.html" target="_blank" rel="noopener">Résumé</a>
+  </div>
+</nav>
+
+<header class="hero" id="top">
+  <div class="hero-glow g1"></div>
+  <div class="hero-glow g2"></div>
+  <div class="container">
+    <div class="eyebrow reveal">Systems &amp; AI Engineer · Huntsville, AL</div>
+    <h1 class="reveal">I build AI systems reliable enough to <span class="grad">run in production.</span></h1>
+    <p class="hero-sub reveal">I'm a systems and industrial engineer out of Texas A&amp;M, with time at Tesla and Boeing and over $7.4M in documented savings behind me. Now I build agentic AI end to end. I run my own company on a framework I wrote: about 4,000 automation runs a month, unattended.</p>
+    <div class="hero-cta reveal">
+      <a class="btn btn-primary" href="#work">See my work <span class="arr">→</span></a>
+      <a class="btn btn-ghost" href="resume.html" target="_blank" rel="noopener">Résumé</a>
+      <div class="iconlinks">
+        <a href="https://www.linkedin.com/in/nicholas-comeaux" target="_blank" rel="noopener">LinkedIn</a>
+      </div>
+    </div>
+
+    <div class="stats">
+      <div class="stat reveal"><div class="num" data-count="7.4" data-prefix="$" data-suffix="M+">$0</div><div class="lab">documented savings</div></div>
+      <div class="stat reveal"><div class="num" data-count="4000" data-suffix="+">0</div><div class="lab">monthly runs</div></div>
+      <div class="stat reveal"><div class="num" data-count="7">0</div><div class="lab">AI agents</div></div>
+      <div class="stat reveal"><div class="num" data-count="40" data-suffix="+">0</div><div class="lab">Python tools</div></div>
+      <div class="stat reveal"><div class="num" data-count="10" data-suffix="+">0</div><div class="lab">API integrations</div></div>
+      <div class="stat reveal"><div class="num" data-count="100">0</div><div class="lab">Lighthouse</div></div>
+    </div>
+  </div>
+</header>
+
+<main class="container">
+
+  <section class="block" id="about">
+    <div class="eyebrow reveal">About</div>
+    <h2 class="reveal">How I got here.</h2>
+    <div class="rule reveal"></div>
+    <p class="lead reveal" style="margin-top:26px;">
+      I started on factory floors. At Tesla I designed material flow and warehouse layouts for Cybertruck production, and
+      identified millions in savings by reworking dock assignments and storage. At Boeing I run an eight-person engineering
+      program as Scrum Master and built the data systems that cut executive reporting time by two thirds. Industrial engineering
+      is where my AI work comes from. I think in inputs, constraints, and outcomes, and I build systems I can trust to run on
+      their own.
+    </p>
+    <p class="lead reveal" style="margin-top:16px;">
+      In early 2026 I started building agentic AI on nights and weekends. It turned into <b>Soltreya</b>, a quality platform
+      for regulated manufacturers that runs on a multi-agent framework I built from scratch. I'm now going all in on AI
+      engineering and looking for a founding engineer role I can commit to full time.
+    </p>
+  </section>
+
+  <section class="block" id="experience">
+    <div class="eyebrow reveal">Experience</div>
+    <h2 class="reveal">Where I've worked</h2>
+    <div class="rule reveal"></div>
+    <div class="tl">
+      <div class="job reveal">
+        <div class="top"><span class="role">Founder &amp; Lead Engineer,</span> <span class="org">Soltreya</span><span class="when">Mar 2026 - Present</span></div>
+        <ul>
+          <li>Architected the <b>WAT framework</b> (Workflows, Agents, Tools) so multi-step AI runs unattended without compounding errors: I scope Claude to the judgment calls and keep execution in deterministic Python I wrote.</li>
+          <li>Run the company on it in production: <b>~4,000 scheduled and event-driven runs a month</b> on Trigger.dev, a Claude orchestrator routing to <b>7 specialist agents</b>, <b>40+ Python tools</b>, and 17 background jobs.</li>
+          <li>Built the product (Next.js, Supabase, Stripe) to a <b>100 Lighthouse score with zero accessibility violations</b>, behind a four-gate security model (rate limiting, auth, tenant isolation, cost caps).</li>
+        </ul>
+      </div>
+      <div class="job reveal">
+        <div class="top"><span class="role">Systems Engineer II,</span> <span class="org">Boeing Intelligence &amp; Analytics</span><span class="when">Oct 2024 - Present</span></div>
+        <ul>
+          <li>Keep an 8-person engineering program across 3 partner companies on schedule as Scrum Master, surfacing interface risk early through technical syncs and milestone reviews.</li>
+          <li>Cut executive briefing prep time <b>67%</b> by designing the program's authoritative data source and automated KPI dashboards (Qlik Sense).</li>
+        </ul>
+      </div>
+      <div class="job reveal">
+        <div class="top"><span class="role">Industrial Engineering Intern, Material Flow,</span> <span class="org">Tesla</span><span class="when">Jan 2023 - Aug 2023</span></div>
+        <ul>
+          <li>Identified <b>$3.4M</b> in dock-allocation savings and cut storage 66%; redesigned delivery routes for <b>$4M/yr</b> additional OPEX reduction, freeing 16,000 sq ft.</li>
+          <li>Built material-flow models for 3 shops (250+ parts) in Revit and AutoCAD; raised lineside part buy-off rate from <b>54% to 95%</b>.</li>
+        </ul>
+      </div>
+      <div class="job reveal">
+        <div class="top"><span class="role">Senior Capstone,</span> <span class="org">Texas A&amp;M × CHRISTUS Health</span><span class="when">2024</span></div>
+        <ul>
+          <li>Automated a hospital therapy department's daily productivity reporting, cutting supervisor reporting time <b>66%</b> (90 to 30 minutes) and removing manual calculation errors.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="work">
+    <div class="eyebrow reveal">Selected Work</div>
+    <h2 class="reveal">What I've built</h2>
+    <div class="rule reveal"></div>
+
+    <div class="feature reveal">
+      <div class="pad">
+        <div class="tag">My company</div>
+        <h3>Soltreya: AI quality platform</h3>
+        <p>Soltreya helps regulated manufacturers handle corrective actions: the root-cause and paperwork work quality
+          engineers otherwise spend weeks on per finding. It finds and scores target factories, drafts outreach in my voice
+          for me to approve, runs the live Quality Hub product, and keeps itself running across 17 background jobs behind a
+          four-gate security model. I built and operate the whole thing myself, for manufacturers working under standards like
+          IATF 16949 and ISO 9001.</p>
+        <div class="chips">
+          <span class="chip"><b>~4,000</b> runs/mo</span>
+          <span class="chip"><b>7</b> agents</span>
+          <span class="chip"><b>40+</b> tools</span>
+          <span class="chip"><b>10+</b> APIs</span>
+          <span class="chip"><b>100</b> Lighthouse</span>
+          <span class="chip">Next.js · Supabase · Trigger.dev · Claude</span>
+        </div>
+        <div class="actions">
+          <a class="btn btn-primary" href="system-architecture.html">Explore the architecture <span class="arr">→</span></a>
+          <a class="btn btn-ghost" href="https://soltreya.com" target="_blank" rel="noopener">Visit soltreya.com</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="pcard reveal">
+        <div class="tag">Architecture pattern</div>
+        <h3>The WAT framework</h3>
+        <p>Workflows, Agents, Tools. The reliability pattern under everything: probabilistic AI handles reasoning while
+          deterministic code handles execution, so 90%-accurate steps never compound into failure.</p>
+      </div>
+      <div class="pcard reveal">
+        <div class="tag">Production automation</div>
+        <h3>40+ Python tools</h3>
+        <p>40+ Python tools and 17 TypeScript background jobs for sourcing, research, reporting, and outreach. They run on a
+          schedule or fire from Telegram, email, and cron, and connect to 10+ external APIs.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="skills">
+    <div class="eyebrow reveal">Skills</div>
+    <h2 class="reveal">What I work with</h2>
+    <div class="rule reveal"></div>
+    <div class="skills">
+      <div class="skgroup reveal"><h4>AI &amp; Automation</h4><div class="tags">
+        <span>Claude API</span><span>Multi-agent orchestration</span><span>Prompt engineering</span><span>Trigger.dev</span><span>Agent tooling</span><span>RAG</span>
+      </div></div>
+      <div class="skgroup reveal"><h4>Languages</h4><div class="tags">
+        <span>Python</span><span>TypeScript</span><span>SQL</span><span>VBA</span><span>MATLAB</span>
+      </div></div>
+      <div class="skgroup reveal"><h4>Web &amp; Infra</h4><div class="tags">
+        <span>Next.js</span><span>Vercel</span><span>Supabase</span><span>Stripe</span><span>Sentry</span><span>GitHub Actions</span>
+      </div></div>
+      <div class="skgroup reveal"><h4>Systems &amp; Process</h4><div class="tags">
+        <span>Systems engineering</span><span>Lean Six Sigma (Green Belt)</span><span>Scrum</span><span>Process improvement</span><span>Risk management</span>
+      </div></div>
+      <div class="skgroup reveal"><h4>Modeling &amp; CAD</h4><div class="tags">
+        <span>SolidWorks</span><span>AutoCAD</span><span>Revit</span><span>CATIA</span><span>SIMIO</span><span>Qlik Sense</span>
+      </div></div>
+      <div class="skgroup reveal"><h4>Domain</h4><div class="tags">
+        <span>Manufacturing operations</span><span>Material flow</span><span>Corrective action (CAR/SCAR)</span><span>Cost modeling</span>
+      </div></div>
+    </div>
+  </section>
+
+  <section class="block" id="education">
+    <div class="eyebrow reveal">Education &amp; Credentials</div>
+    <h2 class="reveal">Foundation</h2>
+    <div class="rule reveal"></div>
+    <div class="edu">
+      <div class="card reveal"><div class="h">B.S. Industrial &amp; Systems Engineering</div><div class="s">Texas A&amp;M University · College Station, TX</div><div class="m">2024</div></div>
+      <div class="card reveal"><div class="h">Certifications</div><div class="s">Lean Six Sigma Green Belt</div><div class="m">Texas A&amp;M Industrial &amp; Systems Engineering</div></div>
+    </div>
+  </section>
+
+  <section class="block" id="contact">
+    <div class="contact reveal">
+      <h3>I'm looking for a founding engineer role.</h3>
+      <p>If you're building something hard and want an engineer who ships to production and owns the whole stack, reach out. I can start full time on offer.</p>
+      <div class="actions">
+        <a class="btn btn-primary" href="mailto:nicholascomeaux00@gmail.com">nicholascomeaux00@gmail.com</a>
+        <a class="btn btn-ghost" href="https://www.linkedin.com/in/nicholas-comeaux" target="_blank" rel="noopener">LinkedIn</a>
+        <a class="btn btn-ghost" href="resume.html" target="_blank" rel="noopener">Résumé</a>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <span class="sig">Nick Comeaux · Huntsville, AL</span>
+    <span>Built from scratch · 2026</span>
+  </footer>
+
+</main>
+
+<script>
+  (function () {
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var prog = document.getElementById('progress');
+    function onScroll() {
+      var h = document.documentElement, max = h.scrollHeight - h.clientHeight;
+      prog.style.width = (max > 0 ? (h.scrollTop / max) * 100 : 0) + '%';
+    }
+    window.addEventListener('scroll', onScroll, { passive: true }); onScroll();
+
+    function countUp(el) {
+      var to = parseFloat(el.dataset.count), pre = el.dataset.prefix || '', suf = el.dataset.suffix || '';
+      var dec = (el.dataset.count.indexOf('.') > -1) ? 1 : 0;
+      if (reduce) { el.textContent = pre + to + suf; return; }
+      var dur = 1100, t0 = performance.now();
+      function tick(t) {
+        var p = Math.min((t - t0) / dur, 1), e = 1 - Math.pow(1 - p, 3), v = to * e;
+        el.textContent = pre + (dec ? v.toFixed(1) : Math.round(v).toLocaleString()) + suf;
+        if (p < 1) requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
+    }
+
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (!en.isIntersecting) return;
+        en.target.classList.add('in');
+        if (en.target.classList.contains('stat')) countUp(en.target.querySelector('.num'));
+        io.unobserve(en.target);
+      });
+    }, { threshold: 0.14, rootMargin: '0px 0px -6% 0px' });
+    document.querySelectorAll('.reveal').forEach(function (el, i) {
+      el.style.transitionDelay = Math.min((i % 6) * 45, 220) + 'ms'; io.observe(el);
+    });
+
+    var links = Array.prototype.slice.call(document.querySelectorAll('.nav-links a'));
+    var items = links.map(function (a) {
+      var href = a.getAttribute('href') || '';
+      var sec = href.charAt(0) === '#' && href.length > 1 ? document.getElementById(href.slice(1)) : null;
+      return sec ? { a: a, sec: sec } : null;
+    }).filter(Boolean);
+    function spy() {
+      // active = the section whose top is the lowest one still at/above the trigger line —
+      // chosen by position, not array order, so nav order never has to match document order.
+      var active = null, best = -Infinity;
+      items.forEach(function (it) {
+        var top = it.sec.getBoundingClientRect().top;
+        if (top <= 120 && top > best) { best = top; active = it.a; }
+      });
+      // at the bottom, the last section may be too short to reach the trigger line — force it
+      if (items.length && window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2) {
+        active = items.reduce(function (lo, it) {
+          return it.sec.getBoundingClientRect().top > lo.sec.getBoundingClientRect().top ? it : lo;
+        }).a;
+      }
+      links.forEach(function (a) { a.classList.toggle('active', a === active); });
+    }
+    window.addEventListener('scroll', spy, { passive: true });
+    window.addEventListener('resize', spy, { passive: true }); spy();
+  })();
+</script>
+</body>
+</html>
