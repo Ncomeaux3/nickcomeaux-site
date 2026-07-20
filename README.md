@@ -1,6 +1,6 @@
 # nickcomeaux-site
 
-Source for my personal site, live at https://nickcomeaux.vercel.app.
+Source for my personal site, live at https://nicholascomeaux.com.
 
 Static HTML, no build step. Pages:
 - `index.html` - landing page
