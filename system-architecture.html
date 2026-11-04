@@ -4,18 +4,32 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Soltreya: System Architecture</title>
-<link rel="icon" href="data:," />
+<meta name="description" content="How a solo side project was built: the WAT framework, a Claude orchestrator, 7 specialist agents, and 17 background jobs in production." />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Soltreya: System Architecture" />
+<meta property="og:description" content="How a solo side project was built: the WAT framework, a Claude orchestrator, 7 specialist agents, and 17 background jobs in production." />
+<meta property="og:url" content="https://nicholascomeaux.com/system-architecture.html" />
+<meta property="og:image" content="https://nicholascomeaux.com/og-9fe8f705.jpg" />
+<meta property="og:image:type" content="image/jpeg" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="627" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="theme-color" content="#07080A" />
+<link rel="canonical" href="https://nicholascomeaux.com/system-architecture.html" />
+<link rel="icon" href="favicon-16.png" type="image/png" sizes="16x16" />
+<link rel="icon" href="favicon.png" type="image/png" sizes="32x32" />
+<link rel="apple-touch-icon" href="apple-touch-icon.png" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
 <style>
   :root {
-    --bg: #07080b; --bg-2: #0a0c10; --surface: #0e1117; --surface-2: #13161d;
+    --bg: #07080A; --bg-2: #0A0B0E; --surface: #0C0E11; --surface-2: #12141A;
     --line: rgba(255,255,255,0.07); --line-2: rgba(255,255,255,0.12);
-    --ink: #eef1f6; --muted: #9aa4b4; --faint: #5e6877;
-    --accent: #6e8efb; --accent-2: #4fd6c0; --warn: #f3b14e; --danger: #ff6f6f;
-    --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
-    --sans: 'Hanken Grotesk', system-ui, -apple-system, sans-serif;
+    --ink: #F4F5F7; --muted: #B8BCC4; --faint: #8A8F98;
+    --accent: #037A68; --accent-2: #2FB8A6; --warn: #F5C04A; --danger: #FF6B6B;
+    --mono: 'Manrope', system-ui, -apple-system, sans-serif;
+    --sans: 'Manrope', system-ui, -apple-system, sans-serif;
     --maxw: 1140px;
     --ease: cubic-bezier(.22,.61,.36,1);
   }
@@ -30,8 +44,8 @@
   body::before {
     content: ""; position: fixed; inset: 0; z-index: -2; pointer-events: none;
     background:
-      radial-gradient(900px 500px at 78% -8%, rgba(110,142,251,0.14), transparent 60%),
-      radial-gradient(760px 520px at 8% 4%, rgba(79,214,192,0.07), transparent 55%),
+      radial-gradient(900px 500px at 78% -8%, rgba(3,122,104,0.14), transparent 60%),
+      radial-gradient(760px 520px at 8% 4%, rgba(47,184,166,0.07), transparent 55%),
       radial-gradient(1px 1px at 20px 20px, rgba(255,255,255,0.045) 1px, transparent 0);
     background-size: auto, auto, 38px 38px;
   }
@@ -39,7 +53,7 @@
     content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none; opacity: 0.025;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
-  ::selection { background: rgba(110,142,251,0.32); color: #fff; }
+  ::selection { background: rgba(3,122,104,0.32); color: #fff; }
   ::-webkit-scrollbar { width: 11px; height: 11px; }
   ::-webkit-scrollbar-thumb { background: #20242d; border-radius: 20px; border: 3px solid var(--bg); }
   ::-webkit-scrollbar-thumb:hover { background: #2b303b; }
@@ -48,8 +62,8 @@
   a { color: inherit; }
 
   .eyebrow {
-    font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.22em; text-transform: uppercase;
-    color: var(--accent); display: inline-flex; align-items: center; gap: 9px;
+    font-family: var(--sans); font-size: 13px; font-weight: 600; letter-spacing: 0.02em; text-transform: none;
+    color: var(--accent-2); display: inline-flex; align-items: center; gap: 9px;
   }
   .eyebrow::before { content: ""; width: 22px; height: 1px; background: var(--accent); opacity: 0.7; }
 
@@ -60,9 +74,11 @@
     background: rgba(7,8,11,0.72); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
     border-bottom: 1px solid var(--line); }
   .nav .container { height: 100%; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
-  .brand { font-family: var(--mono); font-weight: 600; font-size: 13px; letter-spacing: 0.16em;
-    text-transform: uppercase; color: var(--ink); text-decoration: none; white-space: nowrap; }
-  .brand b { color: var(--accent); font-weight: 700; }
+  .brand { font-family: var(--mono); font-weight: 600; font-size: 13px; letter-spacing: 0.01em;
+    text-transform: none; color: var(--ink); text-decoration: none; white-space: nowrap;
+    display: inline-flex; align-items: center; gap: 10px; }
+  .brand svg { width: 24px; height: 24px; display: block; flex-shrink: 0; }
+  .brand b { color: var(--accent-2); font-weight: 700; }
   .brand span { color: var(--faint); font-weight: 400; }
   .nav-links { display: flex; gap: 4px; align-items: center; }
   .nav-links a { font-size: 13.5px; color: var(--muted); text-decoration: none; padding: 7px 12px;
@@ -71,29 +87,41 @@
   .nav-links a.active { color: var(--ink); }
   .nav-links a.active::after { content: ""; position: absolute; left: 12px; right: 12px; bottom: 1px;
     height: 2px; background: var(--accent); border-radius: 2px; }
-  @media (max-width: 760px) { .nav-links { display: none; } }
+  .nav-toggle { display: none; background: none; border: 1px solid var(--line-2); border-radius: 8px;
+    color: var(--ink); padding: 7px 10px; cursor: pointer; line-height: 0; }
+  .nav-toggle:hover { border-color: var(--accent); }
+  .nav-toggle svg { width: 18px; height: 18px; display: block; }
+  @media (max-width: 760px) {
+    .nav-toggle { display: inline-flex; align-items: center; }
+    .nav-links { display: none; position: fixed; top: 60px; left: 0; right: 0; flex-direction: column;
+      align-items: stretch; gap: 2px; padding: 10px 20px 16px;
+      background: rgba(7,8,11,0.96); backdrop-filter: blur(14px); border-bottom: 1px solid var(--line); }
+    .nav-links.open { display: flex; }
+    .nav-links a { padding: 12px; font-size: 15px; }
+    .nav-links a.active::after { left: 12px; right: auto; width: 18px; }
+  }
 
   /* hero */
   .hero { position: relative; padding: 150px 0 56px; overflow: hidden; }
   .hero-glow { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.5; z-index: -1; pointer-events: none; }
-  .hero-glow.g1 { width: 520px; height: 360px; right: -80px; top: 40px; background: rgba(110,142,251,0.30); animation: drift 16s var(--ease) infinite alternate; }
-  .hero-glow.g2 { width: 380px; height: 300px; left: -60px; top: 220px; background: rgba(79,214,192,0.16); animation: drift 20s var(--ease) infinite alternate-reverse; }
+  .hero-glow.g1 { width: 520px; height: 360px; right: -80px; top: 40px; background: rgba(3,122,104,0.30); animation: drift 16s var(--ease) infinite alternate; }
+  .hero-glow.g2 { width: 380px; height: 300px; left: -60px; top: 220px; background: rgba(47,184,166,0.16); animation: drift 20s var(--ease) infinite alternate-reverse; }
   @keyframes drift { from { transform: translate3d(0,0,0); } to { transform: translate3d(-26px, 24px, 0); } }
   .hero h1 { font-size: clamp(38px, 6.4vw, 70px); line-height: 1.03; letter-spacing: -0.035em;
-    font-weight: 800; margin: 20px 0 0; max-width: 16ch; }
-  .hero h1 .grad { background: linear-gradient(96deg, var(--accent) 10%, var(--accent-2) 92%);
+    font-weight: 700; margin: 20px 0 0; max-width: 16ch; }
+  .hero h1 .grad { background: linear-gradient(96deg, #037A68 10%, var(--accent-2) 92%);
     -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
   .hero-sub { font-size: clamp(16px, 2vw, 19px); color: var(--muted); max-width: 60ch; margin: 24px 0 0; }
   .hero-cta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 34px; }
   .btn { display: inline-flex; align-items: center; gap: 8px; font-family: var(--sans); font-weight: 600;
-    font-size: 14.5px; padding: 12px 20px; border-radius: 11px; text-decoration: none; cursor: pointer;
+    font-size: 14.5px; padding: 12px 20px; border-radius: 8px; text-decoration: none; cursor: pointer;
     border: 1px solid transparent; transition: transform .18s var(--ease), box-shadow .25s var(--ease), background .2s; }
   .btn .arr { transition: transform .25s var(--ease); }
   .btn:hover .arr { transform: translateX(3px); }
-  .btn-primary { background: var(--accent); color: #08091a; box-shadow: 0 8px 28px -10px rgba(110,142,251,0.7); }
-  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 14px 36px -10px rgba(110,142,251,0.85); }
+  .btn-primary { background: var(--accent); color: #fff; box-shadow: 0 8px 28px -10px rgba(3,122,104,0.7); }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 14px 36px -10px rgba(3,122,104,0.85); }
   .btn-ghost { border-color: var(--line-2); color: var(--ink); background: rgba(255,255,255,0.02); }
-  .btn-ghost:hover { transform: translateY(-2px); border-color: var(--accent); background: rgba(110,142,251,0.08); }
+  .btn-ghost:hover { transform: translateY(-2px); border-color: var(--accent); background: rgba(3,122,104,0.08); }
 
   /* stats */
   .stats { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0; margin-top: 56px;
@@ -118,7 +146,7 @@
   h3.fig-title { font-size: 21px; font-weight: 600; letter-spacing: -0.01em; margin: 0; }
   .fig { margin: 40px 0; }
   .fig-head { display: flex; align-items: baseline; gap: 14px; margin-bottom: 16px; }
-  .fig-head .idx { font-family: var(--mono); font-size: 13px; color: var(--accent); font-weight: 600; }
+  .fig-head .idx { font-family: var(--mono); font-size: 13px; color: var(--accent-2); font-weight: 600; }
   .fig-head .sub { color: var(--faint); font-size: 13.5px; margin-left: auto; font-family: var(--mono); }
 
   .caption { color: var(--muted); font-size: 14.5px; margin-top: 16px; padding-left: 16px;
@@ -134,18 +162,18 @@
 
   /* parts list */
   ul.parts { list-style: none; padding: 0; margin: 26px 0 0; display: grid; gap: 1px;
-    background: var(--line); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+    background: var(--line); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
   ul.parts li { padding: 16px 18px; background: var(--surface); }
   ul.parts li b { color: var(--accent-2); }
 
   /* feature grid */
   .features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 26px; }
   @media (max-width: 760px) { .features { grid-template-columns: 1fr; } }
-  .feat { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 18px;
+  .feat { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 18px;
     transition: transform .2s var(--ease), border-color .2s var(--ease); }
   .feat:hover { transform: translateY(-3px); border-color: var(--line-2); }
-  .feat .k { font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
-    color: var(--accent); }
+  .feat .k { font-family: var(--mono); font-size: 11px; letter-spacing: 0.02em; text-transform: none;
+    color: var(--accent-2); }
   .feat p { margin: 8px 0 0; font-size: 14.5px; color: #cdd5e0; }
 
   /* timeline */
@@ -154,25 +182,25 @@
     background: linear-gradient(180deg, var(--accent), var(--accent-2)); opacity: 0.5; }
   .step { position: relative; padding: 0 0 22px; }
   .step::before { content: ""; position: absolute; left: -25px; top: 6px; width: 9px; height: 9px;
-    border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 4px rgba(110,142,251,0.16); }
+    border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 4px rgba(3,122,104,0.16); }
   .step p { margin: 0; font-size: 15px; color: #cdd5e0; }
 
   /* stack grid */
-  .stack { margin-top: 24px; border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+  .stack { margin-top: 24px; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
   .srow { display: grid; grid-template-columns: 1.1fr 1.2fr 1.5fr; gap: 16px; padding: 13px 18px;
     border-top: 1px solid var(--line); transition: background .15s; align-items: baseline; }
   .srow:first-child { border-top: none; }
   .srow:hover { background: rgba(255,255,255,0.018); }
-  .srow .c1 { font-family: var(--mono); font-size: 12px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--faint); }
+  .srow .c1 { font-family: var(--mono); font-size: 12px; letter-spacing: 0.04em; text-transform: none; color: var(--faint); }
   .srow .c2 { font-size: 14.5px; color: var(--ink); font-weight: 500; }
   .srow .c3 { font-size: 13.5px; color: var(--muted); }
   @media (max-width: 760px) { .srow { grid-template-columns: 1fr; gap: 4px; } .srow .c3 { font-size: 13px; } }
 
   .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 24px; }
   @media (max-width: 760px) { .grid2 { grid-template-columns: 1fr; } }
-  .sec { border: 1px solid var(--line); border-radius: 14px; padding: 20px; background: var(--surface); }
+  .sec { border: 1px solid var(--line); border-radius: 12px; padding: 20px; background: var(--surface); }
   .sec h4 { margin: 0 0 12px; font-size: 13px; font-family: var(--mono); letter-spacing: 0.06em;
-    text-transform: uppercase; color: var(--accent-2); }
+    text-transform: none; color: var(--accent-2); }
   .sec ul { margin: 0; padding-left: 18px; } .sec li { margin: 7px 0; font-size: 14px; color: #cdd5e0; }
   .pending { color: var(--warn); }
 
@@ -189,25 +217,26 @@
   .wf-row { display: flex; align-items: stretch; justify-content: center; gap: var(--wgap); }
   .wf-row.wf-tail { margin-top: 13px; }
   .wf-node { position: relative; flex: 1 1 0; min-width: 168px; max-width: 300px;
-    background: var(--surface); border: 1px solid var(--line-2); border-radius: 13px; padding: 13px 15px;
+    background: var(--surface); border: 1px solid var(--line-2); border-radius: 12px; padding: 13px 15px;
     transition: transform .18s var(--ease), border-color .18s var(--ease), box-shadow .18s var(--ease); }
   .wf-node-t { font-family: var(--mono); font-size: 12px; font-weight: 600; letter-spacing: .03em;
-    text-transform: uppercase; color: var(--ink); line-height: 1.32; }
+    text-transform: none; color: var(--ink); line-height: 1.32; }
   .wf-node-s { font-size: 12.5px; color: var(--muted); margin-top: 6px; line-height: 1.5; }
   .wf-detail { display: none; }
   .wf-node.click { cursor: pointer; }
+  .wf-node.click:focus-visible { outline: 2px solid var(--accent-2); outline-offset: 2px; }
   .wf-node.click:hover { transform: translateY(-2px); border-color: var(--accent);
-    box-shadow: 0 12px 30px -16px rgba(110,142,251,.65); }
-  .wf-node.on { border-color: var(--accent-2); box-shadow: 0 0 0 1px rgba(79,214,192,.4); }
-  .wf-node.acc { border-color: rgba(110,142,251,.45); background: linear-gradient(180deg, rgba(110,142,251,.09), var(--surface)); }
-  .wf-node.acc .wf-node-t { color: var(--accent); }
-  .wf-node.teal { border-color: rgba(79,214,192,.42); background: linear-gradient(180deg, rgba(79,214,192,.08), var(--surface)); }
+    box-shadow: 0 12px 30px -16px rgba(3,122,104,.65); }
+  .wf-node.on { border-color: var(--accent-2); box-shadow: 0 0 0 1px rgba(47,184,166,.4); }
+  .wf-node.acc { border-color: rgba(3,122,104,.45); background: linear-gradient(180deg, rgba(3,122,104,.09), var(--surface)); }
+  .wf-node.acc .wf-node-t { color: var(--accent-2); }
+  .wf-node.teal { border-color: rgba(47,184,166,.42); background: linear-gradient(180deg, rgba(47,184,166,.08), var(--surface)); }
   .wf-node.teal .wf-node-t { color: var(--accent-2); }
-  .wf-node.warn { border-color: rgba(243,177,78,.5); background: linear-gradient(180deg, rgba(243,177,78,.09), var(--surface)); }
+  .wf-node.warn { border-color: rgba(245,192,74,.5); background: linear-gradient(180deg, rgba(245,192,74,.09), var(--surface)); }
   .wf-node.warn .wf-node-t { color: var(--warn); }
-  .wf-node.danger { border-color: rgba(255,111,111,.5); background: linear-gradient(180deg, rgba(255,111,111,.09), var(--surface)); }
+  .wf-node.danger { border-color: rgba(255,107,107,.5); background: linear-gradient(180deg, rgba(255,107,107,.09), var(--surface)); }
   .wf-node.danger .wf-node-t { color: var(--danger); }
-  .wf-node.db { background: linear-gradient(180deg, var(--surface-2), var(--surface)); border-color: rgba(79,214,192,.32); }
+  .wf-node.db { background: linear-gradient(180deg, var(--surface-2), var(--surface)); border-color: rgba(47,184,166,.32); }
   .wf-node.db .wf-node-t { color: var(--accent-2); }
   .wf-node.wide { flex: 0 1 auto; min-width: min(420px, 92%); max-width: 560px; }
   .wf-arr { flex: 0 0 auto; align-self: center; color: var(--faint); font-size: 17px; line-height: 1; user-select: none; }
@@ -215,12 +244,12 @@
   .wf-down .ico { font-size: 17px; line-height: 1; }
   .wf-down .lbl { font-family: var(--mono); font-size: 10.5px; letter-spacing: .04em; color: var(--faint); }
   .wf-dot { position: absolute; top: 9px; right: 10px; width: 7px; height: 7px; border-radius: 50%;
-    background: var(--accent); box-shadow: 0 0 0 3px rgba(110,142,251,.16); pointer-events: none; }
+    background: var(--accent); box-shadow: 0 0 0 3px rgba(3,122,104,.16); pointer-events: none; }
   /* grouped lanes (replace subgraphs) */
   .wf-lanes { display: grid; grid-template-columns: repeat(auto-fit, minmax(218px, 1fr)); gap: var(--wgap); align-items: start; }
-  .wf-lane { border: 1px solid rgba(110,142,251,.18); border-radius: 14px; padding: 13px 13px 14px; background: rgba(110,142,251,.04); }
+  .wf-lane { border: 1px solid rgba(3,122,104,.18); border-radius: 12px; padding: 13px 13px 14px; background: rgba(3,122,104,.04); }
   .wf-lane > .lab { display: block; font-family: var(--mono); font-size: 10.5px; letter-spacing: .12em;
-    text-transform: uppercase; color: var(--accent-2); margin-bottom: 11px; }
+    text-transform: none; color: var(--accent-2); margin-bottom: 11px; }
   .wf-stack { display: flex; flex-direction: column; gap: 9px; align-items: stretch; }
   .wf-stack .wf-arr { align-self: center; }
   .wf-lane .wf-node { flex: 1 1 auto; min-width: 0; max-width: none; }
@@ -229,8 +258,8 @@
   .wf-note .tag { color: var(--accent-2); }
   /* detail popover */
   .wf-pop { position: absolute; z-index: 8; width: 300px; max-width: 92%;
-    background: rgba(14,17,23,0.96); backdrop-filter: blur(12px); border: 1px solid rgba(110,142,251,0.5);
-    border-radius: 13px; padding: 14px 16px; box-shadow: 0 18px 50px rgba(0,0,0,0.6); display: none; }
+    background: rgba(14,17,23,0.96); backdrop-filter: blur(12px); border: 1px solid rgba(3,122,104,0.5);
+    border-radius: 12px; padding: 14px 16px; box-shadow: 0 18px 50px rgba(0,0,0,0.6); display: none; }
   .wf-pop h5 { margin: 0 0 7px; font-size: 14px; color: var(--accent-2); padding-right: 18px; font-weight: 700; }
   .wf-pop p { margin: 0; font-size: 13.5px; color: #cdd5e0; line-height: 1.55; }
   .wf-pop .x { position: absolute; top: 8px; right: 11px; cursor: pointer; color: var(--faint);
@@ -246,22 +275,32 @@
     * { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
     .reveal { opacity: 1; transform: none; }
   }
+  code { font-family: var(--sans); font-weight: 500; font-size: 0.92em; background: rgba(255,255,255,0.06); border: 1px solid var(--line); border-radius: 5px; padding: 1px 6px; }
 </style>
+<noscript><style>
+  /* every section is opacity:0 until the IntersectionObserver adds .in, so
+     without JS the whole page would render blank. Reveal it all up front. */
+  .reveal { opacity: 1 !important; transform: none !important; }
+</style></noscript>
 </head>
 <body>
 <div class="progress" id="progress"></div>
 
 <nav class="nav">
   <div class="container">
-    <a class="brand" href="index.html"><b>NICK COMEAUX</b> <span>/ Soltreya</span></a>
-    <div class="nav-links">
+    <a class="brand" aria-label="Nick Comeaux, home" href="index.html"><svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M 152.3 47.7 L 150.1 45.5 L 147.8 43.5 L 145.4 41.6 L 142.9 39.7 L 140.4 38 L 137.8 36.4 L 135.1 34.8 L 132.4 33.4 L 129.6 32.2 L 126.7 31 L 123.8 29.9 L 120.9 29 L 117.9 28.2 L 114.9 27.5 L 111.9 27 L 108.8 26.5 L 105.8 26.2 L 102.7 26 L 99.6 26 L 96.5 26.1 L 93.5 26.3 L 90.4 26.6 L 87.3 27.1 L 84.3 27.7 L 81.3 28.4 L 78.4 29.2 L 77.6 41.7 L 80.1 40.7 L 82.7 39.9 L 85.4 39.1 L 88.3 38.4 L 91.2 37.8 L 94.3 37.4 L 97.4 37 L 100.6 36.8 L 103.9 36.8 L 107.2 36.9 L 110.5 37.2 L 113.8 37.7 L 117.1 38.3 L 120.4 39.1 L 123.6 40.1 L 126.8 41.3 L 129.9 42.6 L 132.8 44.1 L 135.7 45.7 L 138.4 47.5 L 141 49.3 L 143.5 51.3 L 145.8 53.3 L 147.9 55.4 L 149.8 57.5 L 151.6 59.7 Z" fill="#F4F5F7"/><path d="M 63 35.9 L 58 39.1 L 53.2 42.7 L 48.7 46.6 L 44.6 50.9 L 40.8 55.5 L 37.5 60.4 L 34.5 65.6 L 31.9 71 L 29.8 76.6 L 28.2 82.3 L 27 88.1 L 26.2 94 L 26 100 L 26.2 106 L 27 111.9 L 28.2 117.7 L 29.8 123.4 L 31.9 129 L 34.5 134.4 L 37.5 139.6 L 40.8 144.5 L 44.6 149.1 L 48.7 153.4 L 53.2 157.3 L 58 160.9 L 63 164.1 L 65.2 150.7 L 61.2 147.7 L 57.6 144.6 L 54.3 141.1 L 51.3 137.5 L 48.6 133.8 L 46.2 129.8 L 44.2 125.8 L 42.4 121.6 L 41 117.4 L 39.9 113.1 L 39.1 108.8 L 38.7 104.4 L 38.5 100 L 38.7 95.6 L 39.1 91.2 L 39.9 86.9 L 41 82.6 L 42.4 78.4 L 44.2 74.2 L 46.2 70.2 L 48.6 66.2 L 51.3 62.5 L 54.3 58.9 L 57.6 55.4 L 61.2 52.3 L 65.2 49.3 Z" fill="#037A68"/><path d="M 152.3 152.3 L 150.1 154.5 L 147.8 156.5 L 145.4 158.4 L 142.9 160.3 L 140.4 162 L 137.8 163.6 L 135.1 165.2 L 132.4 166.6 L 129.6 167.8 L 126.7 169 L 123.8 170.1 L 120.9 171 L 117.9 171.8 L 114.9 172.5 L 111.9 173 L 108.8 173.5 L 105.8 173.8 L 102.7 174 L 99.6 174 L 96.5 173.9 L 93.5 173.7 L 90.4 173.4 L 87.3 172.9 L 84.3 172.3 L 81.3 171.6 L 78.4 170.8 L 77.6 158.3 L 80.1 159.3 L 82.7 160.1 L 85.4 160.9 L 88.3 161.6 L 91.2 162.2 L 94.3 162.6 L 97.4 163 L 100.6 163.2 L 103.9 163.2 L 107.2 163.1 L 110.5 162.8 L 113.8 162.3 L 117.1 161.7 L 120.4 160.9 L 123.6 159.9 L 126.8 158.7 L 129.9 157.4 L 132.8 155.9 L 135.7 154.3 L 138.4 152.5 L 141 150.7 L 143.5 148.7 L 145.8 146.7 L 147.9 144.6 L 149.8 142.5 L 151.6 140.3 Z" fill="#F4F5F7"/></svg><span style="display:inline"><b>Nick Comeaux</b> <span>/ Soltreya</span></span></a>
+    <div class="nav-links" id="nav-links">
       <a href="index.html">← Home</a>
       <a href="#simple">Overview</a>
       <a href="#product">Product</a>
       <a href="#leadengine">Lead Engine</a>
+      <a href="#wat">WAT</a>
       <a href="#stack">Stack</a>
       <a href="#security">Security</a>
     </div>
+    <button class="nav-toggle" id="nav-toggle" aria-label="Menu" aria-expanded="false" aria-controls="nav-links">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+    </button>
   </div>
 </nav>
 
@@ -270,19 +309,20 @@
   <div class="hero-glow g2"></div>
   <div class="container">
     <div class="eyebrow reveal">Soltreya · System Architecture</div>
-    <h1 class="reveal">A production system that <span class="grad">finds its own leads.</span></h1>
-    <p class="hero-sub reveal">Soltreya sources manufacturers, drafts outreach in my voice, runs the live quality product, and keeps itself running across 17 background jobs behind a four-gate security model. Built and operated end to end by one engineer.</p>
+    <h1 class="reveal">A production system that <span class="grad">found its own leads.</span></h1>
+    <p class="hero-sub reveal">Soltreya was a solo side project I built at home from March to June 2026. It sourced manufacturers, drafted outreach for my approval, ran the quality app, and kept itself running across 17 background jobs behind a four-gate security model. It never had customers, and I stopped building it in June. The rest of this page describes the system as it was built.</p>
     <div class="hero-cta reveal">
       <a class="btn btn-primary" href="#simple">Plain-English tour <span class="arr">→</span></a>
       <a class="btn btn-ghost" href="#technical">Technical deep-dive <span class="arr">→</span></a>
     </div>
 
     <div class="stats" id="stats">
-      <div class="stat reveal"><div class="num" data-count="3">0</div><div class="lab">core systems</div></div>
-      <div class="stat reveal"><div class="num" data-count="17">0</div><div class="lab">background jobs</div></div>
-      <div class="stat reveal"><div class="num" data-count="4">0</div><div class="lab">security gates</div></div>
-      <div class="stat reveal"><div class="num" data-count="8">0</div><div class="lab">system diagrams</div></div>
-      <div class="stat reveal"><div class="num" data-count="1">0</div><div class="lab">engineer</div></div>
+      <!-- initial text is the final value so the numbers still read correctly with JS off -->
+      <div class="stat reveal"><div class="num" data-count="3">3</div><div class="lab">core systems</div></div>
+      <div class="stat reveal"><div class="num" data-count="17">17</div><div class="lab">background jobs</div></div>
+      <div class="stat reveal"><div class="num" data-count="4">4</div><div class="lab">security gates</div></div>
+      <div class="stat reveal"><div class="num" data-count="10">10</div><div class="lab">system diagrams</div></div>
+      <div class="stat reveal"><div class="num" data-count="1">1</div><div class="lab">engineer</div></div>
     </div>
   </div>
 </header>
@@ -303,7 +343,7 @@
   <ul class="parts reveal">
     <li><b>The brain</b>: decides <i>who</i> to sell to and <i>why</i> (a written strategy).</li>
     <li><b>Find leads</b>: the Lead Engine hunts for the right factories, writes each a personal intro email, and waits for approval.</li>
-    <li><b>The product</b>: the Quality Hub (live at soltreya.com/hub), where a user logs quality problems and tracks every fix.</li>
+    <li><b>The product</b>: the Quality Hub, where a user logged quality problems and tracked every fix.</li>
     <li><b>Keeps itself running</b>: scheduled jobs refresh the website, send reminders, and pull in new leads automatically.</li>
   </ul>
 
@@ -444,38 +484,68 @@
   </div>
 
   <div class="fig reveal">
-    <div class="fig-head"><span class="idx">·</span><h3 class="fig-title">How a full cycle works, start to finish</h3></div>
+    <div class="fig-head"><span class="idx">·</span><h3 class="fig-title">How a full cycle is designed to work</h3></div>
     <div class="timeline">
       <div class="step"><p><b>Monday, automatic:</b> a job finds 15 machine shops in Ohio, drops a defense contractor (guardrail), scores the rest, and saves them.</p></div>
       <div class="step"><p><b>I open the Lead Engine:</b> I pick a high-scoring shop. The AI has already found a contact email and drafted a short, honest intro in my voice using a real fact from their website.</p></div>
       <div class="step"><p><b>I edit one line and hit send.</b> It goes from my Gmail; a reply (email or text) is logged and auto-sorted.</p></div>
-      <div class="step"><p><b>The shop books a discovery call</b> from the website and later signs a pilot.</p></div>
+      <div class="step"><p><b>A shop books a discovery call</b> from the website, and a pilot follows.</p></div>
       <div class="step"><p><b>Once they're a customer:</b> their quality manager logs a supplier defect into the Quality Hub by pasting an email. The AI fills in the details and suggests an owner plus a corrective action with a due date.</p></div>
       <div class="step"><p><b>A daily reminder</b> keeps the action from slipping. When it's done, the Hub exports an audit-ready PDF.</p></div>
     </div>
+    <div class="caption warn">To be clear about where this stands: everything above the discovery call was built and ran.
+      Soltreya never had pilots or customers, so the last two steps describe the path the system was
+      built for, not traffic it handled.</div>
   </div>
 
   <!-- ============ PART 2 ============ -->
   <section class="band" id="technical">
     <div class="eyebrow reveal">Part Two</div>
     <h2 class="reveal">The technical deep-dive</h2>
-    <p class="desc reveal">The same system at engineering depth: stack, topology, the request security model, the lead pipeline, and the data model.</p>
+    <p class="desc reveal">The same system at engineering depth: the WAT framework underneath it, then stack, topology, the request security model, the lead pipeline, and the data model.</p>
     <div class="rule reveal"></div>
   </section>
+
+  <div class="fig reveal" id="wat">
+    <div class="fig-head"><span class="idx">·</span><h3 class="fig-title">The WAT framework</h3><span class="sub">workflows · agents · tools</span></div>
+    <div class="wf">
+      <div class="wf-lanes" style="grid-template-columns:repeat(auto-fit,minmax(238px,1fr))">
+        <div class="wf-lane"><span class="lab">Instruction in</span><div class="wf-stack">
+          <div class="wf-node"><div class="wf-node-t">Telegram · email · cron</div><div class="wf-node-s">plain-language or scheduled</div><div class="wf-detail">Work enters as a plain-language instruction over Telegram or email, or fires on a schedule.</div></div>
+          <div class="wf-arr">↓</div>
+          <div class="wf-node acc"><div class="wf-node-t">Claude orchestrator</div><div class="wf-node-s">classifies and routes</div><div class="wf-detail">A Claude orchestrator classifies each instruction and routes it to the specialist agent that owns that kind of work.</div></div>
+        </div></div>
+        <div class="wf-lane"><span class="lab">Agents · judgment only</span><div class="wf-stack">
+          <div class="wf-node teal"><div class="wf-node-t">7 specialist agents</div><div class="wf-node-s">research · sales · marketing · delivery · client success · ops · content</div><div class="wf-detail">Seven agents, each scoped to one domain. An agent decides what should happen and which tools to call; it does not execute the work itself.</div></div>
+          <div class="wf-arr">↓</div>
+          <div class="wf-node"><div class="wf-node-t">Workflows</div><div class="wf-node-s">SOPs written in Markdown</div><div class="wf-detail">Each procedure is a Markdown SOP, so changing how the business works is an edit to a document rather than a code change.</div></div>
+        </div></div>
+        <div class="wf-lane"><span class="lab">Tools · execution only</span><div class="wf-stack">
+          <div class="wf-node"><div class="wf-node-t">40+ Python tools</div><div class="wf-node-s">deterministic, testable</div><div class="wf-detail">Every side effect (API calls, file writes, sends) happens in deterministic Python I wrote, so the same input always produces the same result.</div></div>
+          <div class="wf-arr">↓</div>
+          <div class="wf-node"><div class="wf-node-t">Result</div><div class="wf-node-s">logged, human-gated where it matters</div><div class="wf-detail">Results are logged, and anything customer-facing waits for my approval before it goes out.</div></div>
+        </div></div>
+      </div>
+      <div class="wf-note">The split: <span class="tag">AI decides</span> · <span class="tag">Python does</span></div>
+    </div>
+    <div class="caption warn">Why it is built this way: chained AI steps decay. Five steps at ~90% accuracy each land around
+      59% end to end, which is useless for anything unattended. So judgment stays with the model and every side effect runs
+      in deterministic code. That is the whole reason this can run without me watching it.</div>
+  </div>
 
   <div class="fig reveal" id="stack">
     <div class="fig-head"><span class="idx">·</span><h3 class="fig-title">Stack at a glance</h3></div>
     <div class="stack">
       <div class="srow"><div class="c1">Web app</div><div class="c2">Next.js 15 on Vercel</div><div class="c3">App Router; server actions + route handlers; site, Hub, and Lead Engine</div></div>
       <div class="srow"><div class="c1">Database</div><div class="c2">Supabase Postgres + Drizzle ORM</div><div class="c3">Shared instance; <code>hub_*</code> and leadgen tables</div></div>
-      <div class="srow"><div class="c1">File storage</div><div class="c2">Supabase Storage</div><div class="c3"><code>hub-attachments</code> bucket, signed URLs (1h)</div></div>
-      <div class="srow"><div class="c1">AI</div><div class="c2">Anthropic Claude <code>claude-sonnet-4-6</code></div><div class="c3">Hub extraction + action drafting; Lead Engine voice drafting + reply classifier</div></div>
-      <div class="srow"><div class="c1">Lead sourcing</div><div class="c2">Google Places API</div><div class="c3">Primary; Apollo optional for contact data</div></div>
+      <div class="srow"><div class="c1">File storage</div><div class="c2">Supabase Storage</div><div class="c3">Private bucket, short-lived signed URLs</div></div>
+      <div class="srow"><div class="c1">AI</div><div class="c2">Anthropic Claude <code>haiku-4.5</code> · <code>sonnet-4.6</code></div><div class="c3">Haiku for classification and most agent execution; Sonnet for heavier reasoning (Hub extraction, voice drafting)</div></div>
+      <div class="srow"><div class="c1">Lead sourcing</div><div class="c2">Google Places API</div><div class="c3">The source for discovering target companies</div></div>
       <div class="srow"><div class="c1">Contact email</div><div class="c2">Hunter.io + site scraper</div><div class="c3">Domain lookup, name-matched</div></div>
       <div class="srow"><div class="c1">Outbound email</div><div class="c2">Gmail API (OAuth, send-as)</div><div class="c3">Approved drafts only</div></div>
       <div class="srow"><div class="c1">Inbound replies</div><div class="c2">Twilio SMS webhook</div><div class="c3">HMAC-verified; AI-classified</div></div>
-      <div class="srow"><div class="c1">Hub auth</div><div class="c2">Clerk (email allowlist)</div><div class="c3"><code>HUB_DEV_BYPASS</code> in dev only</div></div>
-      <div class="srow"><div class="c1">Rate-limit store</div><div class="c2">Upstash Redis</div><div class="c3">In-memory fallback per instance</div></div>
+      <div class="srow"><div class="c1">Hub auth</div><div class="c2">Clerk (email allowlist)</div><div class="c3">Allowlisted sign-in</div></div>
+      <div class="srow"><div class="c1">Rate-limit store</div><div class="c2">Per-IP counters</div><div class="c3">Caps the public forms and the auth routes</div></div>
       <div class="srow"><div class="c1">Background jobs</div><div class="c2">Trigger.dev (17) + Vercel Cron (2)</div><div class="c3">Two separate schedulers</div></div>
       <div class="srow"><div class="c1">Site refresh</div><div class="c2">Trigger.dev → GitHub → Vercel</div><div class="c3">Commits data files; Vercel auto-redeploys</div></div>
       <div class="srow"><div class="c1">Notifications</div><div class="c2">Telegram · SMTP · Twilio SMS</div><div class="c3">Owner alerts + customer reminders</div></div>
@@ -492,7 +562,7 @@
           <div class="wf-node"><div class="wf-node-t">soltreya-web</div><div class="wf-node-s">Next.js 15 app</div><div class="wf-detail">soltreya-web: the Next.js 15 app (site + Quality Hub + Lead Engine), deployed to Vercel on every git push.</div></div>
         </div></div>
         <div class="wf-lane"><span class="lab">Vercel: the web app</span><div class="wf-stack">
-          <div class="wf-node"><div class="wf-node-t">App surfaces</div><div class="wf-node-s">Marketing site · /hub · /internal/leadgen</div><div class="wf-detail">The three user-facing parts of the app: the public marketing site, the /hub Quality Hub, and the internal /internal/leadgen Lead Engine.</div></div>
+          <div class="wf-node"><div class="wf-node-t">App surfaces</div><div class="wf-node-s">Marketing site · Quality Hub · Lead Engine</div><div class="wf-detail">The three user-facing parts of the app: the public marketing site, the Quality Hub, and the internal Lead Engine.</div></div>
           <div class="wf-arr">↓</div>
           <div class="wf-node"><div class="wf-node-t">API + server actions</div><div class="wf-node-s">/api/*, every request routed first</div><div class="wf-detail">All backend endpoints and server actions; every data request is routed through the security layer first.</div></div>
           <div class="wf-arr">↓</div>
@@ -517,15 +587,15 @@
       <div class="wf-lanes">
         <div class="wf-lane"><span class="lab">Data stores</span><div class="wf-stack">
           <div class="wf-node db"><div class="wf-node-t">Supabase Postgres</div><div class="wf-node-s">hub_* + leadgen tables</div><div class="wf-detail">The primary database holding both the hub_* tables and the leadgen tables.</div></div>
-          <div class="wf-node db"><div class="wf-node-t">Supabase Storage</div><div class="wf-node-s">hub-attachments, signed URLs</div><div class="wf-detail">Uploaded PDFs/spreadsheets (hub-attachments), served via short-lived signed URLs.</div></div>
-          <div class="wf-node db"><div class="wf-node-t">Upstash Redis</div><div class="wf-node-s">Rate-limit counters</div><div class="wf-detail">Per-IP rate-limit counters shared across instances (falls back to in-memory if not configured).</div></div>
+          <div class="wf-node db"><div class="wf-node-t">Supabase Storage</div><div class="wf-node-s">private bucket, signed URLs</div><div class="wf-detail">Uploaded PDFs/spreadsheets in a private bucket, served via short-lived signed URLs.</div></div>
+          <div class="wf-node db"><div class="wf-node-t">In-memory store</div><div class="wf-node-s">Rate-limit counters</div><div class="wf-detail">Per-IP rate-limit counters held in memory by the serving instance.</div></div>
           <div class="wf-node db"><div class="wf-node-t">Google Sheets</div><div class="wf-node-s">Lightweight reporting surface</div><div class="wf-detail">A lightweight data surface some reporting tasks read from and write to.</div></div>
           <div class="wf-node db"><div class="wf-node-t">Notion</div><div class="wf-node-s">Tasks, priorities, financials</div><div class="wf-detail">Tasks, priorities, and financial snapshots the automation reads and updates.</div></div>
         </div></div>
         <div class="wf-lane"><span class="lab">AI + sourcing</span><div class="wf-stack">
-          <div class="wf-node"><div class="wf-node-t">Anthropic Claude</div><div class="wf-node-s">Extraction, drafting, classifying</div><div class="wf-detail">The AI model (claude-sonnet-4-6) used for extraction, drafting, and reply classification.</div></div>
+          <div class="wf-node"><div class="wf-node-t">Anthropic Claude</div><div class="wf-node-s">Extraction, drafting, classifying</div><div class="wf-detail">Haiku 4.5 handles classification and most agent execution; Sonnet 4.6 handles heavier reasoning like Hub extraction and voice drafting.</div></div>
           <div class="wf-node"><div class="wf-node-t">Google Places</div><div class="wf-node-s">Discovers target companies</div><div class="wf-detail">The source for discovering manufacturer companies to target.</div></div>
-          <div class="wf-node"><div class="wf-node-t">Hunter.io / Apollo</div><div class="wf-node-s">Finds + enriches contact email</div><div class="wf-detail">Finds and enriches a contact email for each sourced company.</div></div>
+          <div class="wf-node"><div class="wf-node-t">Hunter.io</div><div class="wf-node-s">Finds + enriches contact email</div><div class="wf-detail">Finds and enriches a contact email for each sourced company.</div></div>
         </div></div>
         <div class="wf-lane"><span class="lab">Comms + ops</span><div class="wf-stack">
           <div class="wf-node"><div class="wf-node-t">Gmail</div><div class="wf-node-s">Sends approved outreach</div><div class="wf-detail">Sends approved outreach from Nick's account via OAuth.</div></div>
@@ -547,7 +617,7 @@
       <div class="wf-row"><div class="wf-node wide"><div class="wf-node-t">Incoming request</div><div class="wf-node-s">browser · cron · webhook</div><div class="wf-detail">Any request: a browser action, a scheduled cron, or an external webhook.</div></div></div>
       <div class="wf-down"><span class="ico">↓</span></div>
       <div class="wf-row">
-        <div class="wf-node acc"><div class="wf-node-t">1 · Rate limit</div><div class="wf-node-s">per-IP (Upstash, in-memory fallback)</div><div class="wf-detail">Caps how many requests an IP can make (5/hour on public forms, 10/15min on auth) to stop abuse and runaway loops.</div></div>
+        <div class="wf-node acc"><div class="wf-node-t">1 · Rate limit</div><div class="wf-node-s">per-IP, in-memory counters</div><div class="wf-detail">Caps how many requests an IP can make against public forms and auth routes, to stop abuse and runaway loops.</div></div>
         <div class="wf-arr">→</div>
         <div class="wf-node acc"><div class="wf-node-t">2 · Authenticate</div><div class="wf-node-s">session · bearer · webhook HMAC</div><div class="wf-detail">Proves who's calling: a logged-in session, an internal service token, or a cryptographic webhook signature.</div></div>
         <div class="wf-arr">→</div>
@@ -566,7 +636,7 @@
     <div class="sec">
       <h4>What protects what</h4>
       <ul>
-        <li><b>Rate limit</b>: per-IP caps (5/hr on public forms, 10/15min on auth); client IP read from trusted proxy headers</li>
+        <li><b>Rate limit</b>: per-IP caps on public forms and auth routes; client IP read from trusted proxy headers</li>
         <li><b>Auth</b>: timing-safe signature checks for service calls; Clerk-managed sessions for the Hub</li>
         <li><b>Tenant scope</b>: session required, then every query filtered to the caller's own tenant</li>
         <li><b>Cost cap</b>: daily spend checked before any paid AI or enrichment call, and logged</li>
@@ -593,19 +663,19 @@
           <div class="wf-arr">↓</div>
           <div class="wf-node"><div class="wf-node-t">Website scrape</div><div class="wf-node-s">private-IP guarded</div><div class="wf-detail">Fetches the company site for personalization facts, but first blocks private and internal IP addresses.</div></div>
           <div class="wf-arr">↓</div>
-          <div class="wf-node warn"><div class="wf-node-t">Guardrail</div><div class="wf-node-s">exclusions.ts drops wrong-fit</div><div class="wf-detail">exclusions.ts rejects aerospace/defense, medical, and dead-era industries before any spend.</div></div>
+          <div class="wf-node warn"><div class="wf-node-t">Guardrail</div><div class="wf-node-s">exclusion list drops wrong-fit</div><div class="wf-detail">An exclusion list rejects aerospace/defense, medical, and dead-era industries before any spend.</div></div>
           <div class="wf-arr">↓</div>
-          <div class="wf-node"><div class="wf-node-t">Fit score 0–100</div><div class="wf-node-s">sector, cert, headcount, geo, OEM</div><div class="wf-detail">fit-score.ts ranks by sector, certification, headcount, geography, and named OEM customers.</div></div>
+          <div class="wf-node"><div class="wf-node-t">Fit score 0–100</div><div class="wf-node-s">sector, cert, headcount, geo, OEM</div><div class="wf-detail">A scoring function ranks by sector, certification, headcount, geography, and named OEM customers.</div></div>
         </div></div>
         <div class="wf-lane"><span class="lab">2 · Enrich</span><div class="wf-stack">
-          <div class="wf-node"><div class="wf-node-t">Hunter.io email</div><div class="wf-node-s">by domain (+ optional Apollo)</div><div class="wf-detail">Hunter.io (and optionally Apollo) finds a contact email by domain.</div></div>
+          <div class="wf-node"><div class="wf-node-t">Hunter.io email</div><div class="wf-node-s">by domain</div><div class="wf-detail">Hunter.io finds a contact email by domain.</div></div>
           <div class="wf-arr">↓</div>
-          <div class="wf-node"><div class="wf-node-t">Cost-cap preflight</div><div class="wf-node-s">logs to daily_costs</div><div class="wf-detail">Guards the paid Hunter and Claude calls and logs spend to the daily_costs table.</div></div>
+          <div class="wf-node"><div class="wf-node-t">Cost-cap preflight</div><div class="wf-node-s">logs daily spend</div><div class="wf-detail">Guards the paid Hunter and Claude calls and logs spend to a daily cost table.</div></div>
         </div></div>
         <div class="wf-lane"><span class="lab">3 · Draft + approve</span><div class="wf-stack">
           <div class="wf-node"><div class="wf-node-t">Claude drafter</div><div class="wf-node-s">first_touch / follow_up / reactivation</div><div class="wf-detail">Generates the email in Nick's voice; the draft kind is first_touch, follow_up, or reactivation.</div></div>
           <div class="wf-arr">↓</div>
-          <div class="wf-node"><div class="wf-node-t">Approval queue</div><div class="wf-node-s">pending_approval worklist</div><div class="wf-detail">Drafts land as pending_approval in a daily worklist for review.</div></div>
+          <div class="wf-node"><div class="wf-node-t">Approval queue</div><div class="wf-node-s">approval worklist</div><div class="wf-detail">Drafts land in a daily approval worklist for review.</div></div>
           <div class="wf-arr">↓</div>
           <div class="wf-node acc"><div class="wf-node-t">Nick</div><div class="wf-node-s">edit / approve / skip</div><div class="wf-detail">Nick edits, approves, or skips each draft.</div></div>
         </div></div>
@@ -633,7 +703,7 @@
       <div class="wf-row">
         <div class="wf-node db"><div class="wf-node-t">LEADS</div><div class="wf-node-s">status: new → won / lost</div><div class="wf-detail">The sourced companies. leads.status flows new → drafted → contacted → replied → conversation → won / lost / churned, with stuckSince for re-engagement.</div></div>
         <div class="wf-node db"><div class="wf-node-t">PULL_RUNS</div><div class="wf-node-s">logs each sourcing run</div><div class="wf-detail">A record of each sourcing run for a project: what was pulled, when, and how many leads resulted.</div></div>
-        <div class="wf-node db"><div class="wf-node-t">DAILY_COSTS</div><div class="wf-node-s">tracks per-day spend</div><div class="wf-detail">Tracks paid-API spend per project per day, enforced by the cost-cap preflight.</div></div>
+        <div class="wf-node db"><div class="wf-node-t">Daily costs</div><div class="wf-node-s">tracks per-day spend</div><div class="wf-detail">Tracks paid-API spend per project per day, enforced by the cost-cap preflight.</div></div>
       </div>
       <div class="wf-down"><span class="ico">↓</span><span class="lbl">each lead has</span></div>
       <div class="wf-row">
@@ -655,8 +725,8 @@
       <div class="sec">
         <h4>Two schedulers</h4>
         <ul>
-          <li><b>Vercel Cron (2):</b> Hub reminders (daily 12:00 UTC) and the weekly lead pull (Mon 13:00 UTC); route handlers guarded by a shared secret.</li>
-          <li><b>Trigger.dev (17):</b> everything else: refresh-signals, refresh-demo, weekly-report, daily-risk-check, monthly-financials, leadgen pulls / sheet-sync / follow-up-sweep / churn-sweep, telegram-agent (webhook), and more.</li>
+          <li><b>Vercel Cron (2):</b> a daily Hub reminder and a weekly lead pull; route handlers guarded by a shared secret.</li>
+          <li><b>Trigger.dev (17):</b> everything else: signal refreshes, the weekly report, the daily risk check, monthly financials, the lead pulls and sweeps, the Telegram agent webhook, and more.</li>
         </ul>
       </div>
       <div class="sec">
@@ -673,15 +743,26 @@
 
   <footer>
     <div class="sig">Designed &amp; built by <b>Nick Comeaux</b> · Soltreya</div>
-    <div style="margin-top:6px;">Generated from the live codebase (soltreya-web + src/trigger) on 2026-06-23; last updated 2026-06-29. Every box in a diagram is clickable for a fuller description.</div>
+    <div style="margin-top:6px;">Generated from the codebase on 2026-06-23; last updated 2026-07-28. Every box in a diagram is clickable for a fuller description.</div>
   </footer>
 
 </main>
 
 <script type="module">
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  initNav();
   initUX();
   initWorkflows();
+
+  function initNav() {
+    // phone menu: the link row is display:none under 760px without this
+    const navToggle = document.getElementById('nav-toggle'), navLinks = document.getElementById('nav-links');
+    const setMenu = (open) => { navLinks.classList.toggle('open', open); navToggle.setAttribute('aria-expanded', open ? 'true' : 'false'); };
+    navToggle.addEventListener('click', () => setMenu(!navLinks.classList.contains('open')));
+    navLinks.addEventListener('click', (e) => { if (e.target.tagName === 'A') setMenu(false); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') setMenu(false); });
+    window.addEventListener('resize', () => { if (innerWidth > 760) setMenu(false); }, { passive: true });
+  }
 
   function initUX() {
     // progress bar
@@ -721,7 +802,7 @@
       requestAnimationFrame(tick);
     }
 
-    // scroll-spy — pair each link to its in-page section by identity (no index drift),
+    // scroll-spy: pair each link to its in-page section by identity (no index drift),
     // and force the last section active when scrolled to the bottom.
     const links = Array.from(document.querySelectorAll('.nav-links a'));
     const items = links.map(a => {
@@ -730,14 +811,14 @@
       return sec ? { a, sec } : null;
     }).filter(Boolean);
     const spy = () => {
-      // active = the section whose top is the lowest one still at/above the trigger line —
+      // active = the section whose top is the lowest one still at/above the trigger line,
       // chosen by position, not array order, so nav order never has to match document order.
       let active = null, best = -Infinity;
       items.forEach(it => {
         const top = it.sec.getBoundingClientRect().top;
         if (top <= 120 && top > best) { best = top; active = it.a; }
       });
-      // at the bottom, the last section may be too short to reach the trigger line — force it
+      // at the bottom, the last section may be too short to reach the trigger line, so force it
       if (items.length && window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2) {
         active = items.reduce((lo, it) => it.sec.getBoundingClientRect().top > lo.sec.getBoundingClientRect().top ? it : lo).a;
       }
@@ -755,10 +836,13 @@
       const pop = document.createElement('div');
       pop.className = 'wf-pop';
       pop.innerHTML = '<button class="x" aria-label="Close">×</button><h5></h5><p></p>';
+      pop.setAttribute('role', 'region'); pop.setAttribute('aria-live', 'polite');
       wf.appendChild(pop);
+      let opener = null; // the node that opened the popover, so closing from the keyboard returns focus there
       const popH5 = pop.querySelector('h5'), popP = pop.querySelector('p');
-      const close = () => { pop.style.display = 'none';
-        wf.querySelectorAll('.wf-node.on').forEach(n => n.classList.remove('on')); };
+      const close = () => { const hadFocus = pop.contains(document.activeElement); pop.style.display = 'none';
+        wf.querySelectorAll('.wf-node.on').forEach(n => { n.classList.remove('on'); n.setAttribute('aria-expanded', 'false'); });
+        if (hadFocus && opener) opener.focus(); opener = null; };
       closers.push(close);
       pop.querySelector('.x').addEventListener('click', (e) => { e.stopPropagation(); close(); });
 
@@ -766,7 +850,13 @@
         const det = node.querySelector('.wf-detail');
         if (!det || !det.textContent.trim()) return;
         node.classList.add('click');
+        node.setAttribute('tabindex', '0');
+        node.setAttribute('role', 'button');
+        node.setAttribute('aria-expanded', 'false');
         const dot = document.createElement('span'); dot.className = 'wf-dot'; node.appendChild(dot);
+        node.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); node.click(); }
+        });
         node.addEventListener('click', () => {
           const wasOpen = node.classList.contains('on');
           closeAll();
@@ -775,7 +865,9 @@
           popH5.textContent = tEl ? tEl.textContent : '';
           popP.textContent = det.textContent;
           pop.style.display = 'block';
+          opener = node;
           node.classList.add('on');
+          node.setAttribute('aria-expanded', 'true');
           const wr = wf.getBoundingClientRect(), nr = node.getBoundingClientRect();
           const pw = pop.offsetWidth, ph = pop.offsetHeight;
           let x = (nr.left - wr.left) + nr.width / 2 - pw / 2;
@@ -795,5 +887,8 @@
     let rt; window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(closeAll, 120); });
   }
 </script>
+<!-- Vercel Web Analytics (first-party, no cookies). -->
+<script>window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };</script>
+<script defer src="/_vercel/insights/script.js"></script>
 </body>
 </html>

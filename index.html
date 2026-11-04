@@ -3,21 +3,37 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Nick Comeaux | Systems & AI Engineer</title>
-<meta name="description" content="Systems and industrial engineer turned AI builder. I design and deploy agentic AI systems that run in production. Tesla and Boeing background, Texas A&M ISE, founder of Soltreya." />
-<link rel="icon" href="data:," />
+<title>Nick Comeaux | Systems Engineer</title>
+<meta name="description" content="Your goals don't decide what happens. Your systems do. Industrial and systems engineer with time at Tesla and Boeing, Texas A&M ISE, active U.S. security clearance." />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Nick Comeaux | Systems Engineer" />
+<meta property="og:description" content="Your goals don't decide what happens. Your systems do. Tesla and Boeing background, Texas A&M ISE." />
+<meta property="og:url" content="https://nicholascomeaux.com/" />
+<meta property="og:image" content="https://nicholascomeaux.com/og-9fe8f705.jpg" />
+<meta property="og:image:type" content="image/jpeg" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="627" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="theme-color" content="#07080A" />
+<link rel="canonical" href="https://nicholascomeaux.com/" />
+<link rel="icon" href="favicon-16.png" type="image/png" sizes="16x16" />
+<link rel="icon" href="favicon.png" type="image/png" sizes="32x32" />
+<link rel="apple-touch-icon" href="apple-touch-icon.png" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
 <style>
   :root {
-    --bg: #07080b; --bg-2: #0a0c10; --surface: #0e1117; --surface-2: #13161d;
+    --bg: #07080A; --bg-2: #0A0B0E; --surface: #0C0E11; --surface-2: #12141A;
     --line: rgba(255,255,255,0.07); --line-2: rgba(255,255,255,0.12);
-    --ink: #eef1f6; --muted: #9aa4b4; --faint: #5e6877;
-    --accent: #6e8efb; --accent-2: #4fd6c0; --warn: #f3b14e;
-    --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
-    --sans: 'Hanken Grotesk', system-ui, -apple-system, sans-serif;
+    --ink: #F4F5F7; --muted: #B8BCC4; --faint: #8A8F98;
+    --accent: #037A68; --accent-2: #2FB8A6; --warn: #F5C04A;
+    --mono: 'Manrope', system-ui, -apple-system, sans-serif;
+    --sans: 'Manrope', system-ui, -apple-system, sans-serif;
     --maxw: 1080px; --ease: cubic-bezier(.22,.61,.36,1);
+    /* Apple-style curves ported from holon-ui tokens.css: a damped spring (ratio 0.85) sampled into linear(), and its ease-out. */
+    --spring: linear(0, 0.086, 0.264, 0.456, 0.624, 0.756, 0.852, 0.917, 0.959, 0.984, 0.997, 1.004, 1.006, 1.006, 1.005, 1.004, 1.003, 1.002, 1.001, 1.001, 1);
+    --out: cubic-bezier(0.2, 0.8, 0.2, 1);
   }
   * { box-sizing: border-box; }
   html { scroll-behavior: smooth; scroll-padding-top: 80px; }
@@ -25,30 +41,33 @@
     line-height: 1.65; font-size: 16px; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
   body::before { content: ""; position: fixed; inset: 0; z-index: -2; pointer-events: none;
     background:
-      radial-gradient(900px 520px at 80% -10%, rgba(110,142,251,0.15), transparent 60%),
-      radial-gradient(760px 520px at 6% 6%, rgba(79,214,192,0.07), transparent 55%),
+      radial-gradient(900px 520px at 80% -10%, rgba(3,122,104,0.15), transparent 60%),
+      radial-gradient(760px 520px at 6% 6%, rgba(47,184,166,0.07), transparent 55%),
       radial-gradient(1px 1px at 20px 20px, rgba(255,255,255,0.045) 1px, transparent 0);
     background-size: auto, auto, 38px 38px; }
   body::after { content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none; opacity: 0.025;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
-  ::selection { background: rgba(110,142,251,0.32); color: #fff; }
+  ::selection { background: rgba(3,122,104,0.32); color: #fff; }
   ::-webkit-scrollbar { width: 11px; }
   ::-webkit-scrollbar-thumb { background: #20242d; border-radius: 20px; border: 3px solid var(--bg); }
   a { color: inherit; }
   .container { max-width: var(--maxw); margin: 0 auto; padding: 0 28px; }
 
-  .eyebrow { font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.22em; text-transform: uppercase;
-    color: var(--accent); display: inline-flex; align-items: center; gap: 9px; }
-  .eyebrow::before { content: ""; width: 22px; height: 1px; background: var(--accent); opacity: 0.7; }
+  .eyebrow { font-family: var(--sans); font-size: 13px; font-weight: 600; letter-spacing: 0.02em;
+    color: var(--accent-2); display: inline-flex; align-items: center; gap: 9px; }
+  .eyebrow::before { content: ""; width: 22px; height: 2px; border-radius: 2px; background: var(--accent); }
 
   .progress { position: fixed; top: 0; left: 0; height: 2px; width: 0;
     background: linear-gradient(90deg, var(--accent), var(--accent-2)); z-index: 100; transition: width .08s linear; }
   .nav { position: fixed; top: 0; left: 0; right: 0; z-index: 90; height: 60px;
-    background: rgba(7,8,11,0.72); backdrop-filter: blur(14px); border-bottom: 1px solid var(--line); }
+    background: rgba(7,8,11,0.72); backdrop-filter: blur(14px) saturate(1.4); border-bottom: 1px solid transparent;
+    transition: border-color .4s var(--out); }
+  .nav.scrolled { border-bottom-color: var(--line); }
   .nav .container { height: 100%; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
-  .brand { font-family: var(--mono); font-weight: 600; font-size: 13px; letter-spacing: 0.16em;
-    text-transform: uppercase; text-decoration: none; white-space: nowrap; }
-  .brand b { color: var(--accent); }
+  .brand { font-family: var(--sans); font-weight: 600; font-size: 14px; letter-spacing: 0.01em; text-decoration: none; white-space: nowrap;
+    display: inline-flex; align-items: center; gap: 10px; }
+  .brand svg { width: 24px; height: 24px; display: block; flex-shrink: 0; }
+  .brand b { color: var(--ink); }
   .nav-links { display: flex; gap: 4px; align-items: center; }
   .nav-links a { font-size: 13.5px; color: var(--muted); text-decoration: none; padding: 7px 12px;
     border-radius: 8px; transition: color .2s, background .2s; position: relative; }
@@ -56,33 +75,39 @@
   .nav-links a.active { color: var(--ink); }
   .nav-links a.active::after { content: ""; position: absolute; left: 12px; right: 12px; bottom: 1px;
     height: 2px; background: var(--accent); border-radius: 2px; }
-  .nav-cta { font-size: 13px; font-weight: 600; padding: 7px 14px; border-radius: 9px;
+  .nav-cta { font-size: 13px; font-weight: 600; padding: 7px 14px; border-radius: 8px;
     border: 1px solid var(--line-2); text-decoration: none; color: var(--ink); transition: border-color .2s, background .2s; }
-  .nav-cta:hover { border-color: var(--accent); background: rgba(110,142,251,0.08); }
+  .nav-cta:hover { border-color: var(--accent); background: rgba(3,122,104,0.08); }
   @media (max-width: 820px) { .nav-links { display: none; } }
 
   .hero { position: relative; padding: 156px 0 60px; overflow: hidden; }
-  .hero-glow { position: absolute; border-radius: 50%; filter: blur(82px); opacity: 0.5; z-index: -1; }
-  .hero-glow.g1 { width: 540px; height: 360px; right: -90px; top: 50px; background: rgba(110,142,251,0.30); animation: drift 16s var(--ease) infinite alternate; }
-  .hero-glow.g2 { width: 380px; height: 300px; left: -70px; top: 230px; background: rgba(79,214,192,0.16); animation: drift 20s var(--ease) infinite alternate-reverse; }
+  .hero-glow { position: absolute; border-radius: 50%; filter: blur(82px); opacity: 0.35; z-index: -1; }
+  /* water: a WebGL layer redraws the hero's dot grid and glows and bends them under pointer ripples (script at the end).
+     Hidden until the first frame, so the CSS glows below are the fallback when WebGL is unavailable. */
+  #water { position: absolute; inset: 0; width: 100%; height: 100%; z-index: -1; opacity: 0; pointer-events: none; transition: opacity .6s; }
+  #water.ready { opacity: 1; }
+  .hero-glow.g1 { width: 540px; height: 360px; right: -90px; top: 50px; background: rgba(3,122,104,0.30); animation: drift 16s var(--ease) infinite alternate; }
+  .hero-glow.g2 { width: 380px; height: 300px; left: -70px; top: 230px; background: rgba(47,184,166,0.16); animation: drift 20s var(--ease) infinite alternate-reverse; }
   @keyframes drift { from { transform: translate3d(0,0,0); } to { transform: translate3d(-26px,22px,0); } }
   .hero h1 { font-size: clamp(40px, 6.6vw, 72px); line-height: 1.02; letter-spacing: -0.035em;
-    font-weight: 800; margin: 20px 0 0; max-width: 17ch; }
-  .hero h1 .grad { background: linear-gradient(96deg, var(--accent) 8%, var(--accent-2) 92%);
-    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+    font-weight: 700; margin: 20px 0 0; max-width: 20ch; }
+  .hero h1 .grad { background: linear-gradient(96deg, #037A68, var(--accent-2), #037A68);
+    background-size: 220% 100%; -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent; animation: gradpan 8s ease-in-out infinite alternate; }
+  @keyframes gradpan { from { background-position: 0% 50%; } to { background-position: 100% 50%; } }
   .hero-sub { font-size: clamp(16px, 2vw, 19px); color: var(--muted); max-width: 62ch; margin: 24px 0 0; }
   .hero-cta { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-top: 34px; }
   .btn { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; font-size: 14.5px;
-    padding: 12px 20px; border-radius: 11px; text-decoration: none; cursor: pointer; border: 1px solid transparent;
-    transition: transform .18s var(--ease), box-shadow .25s var(--ease), background .2s, border-color .2s; }
-  .btn .arr { transition: transform .25s var(--ease); }
+    padding: 12px 20px; border-radius: 8px; text-decoration: none; cursor: pointer; border: 1px solid transparent;
+    transition: transform .5s var(--spring), box-shadow .25s var(--ease), background .2s, border-color .2s; }
+  .btn .arr { transition: transform .5s var(--spring); }
   .btn:hover .arr { transform: translateX(3px); }
-  .btn-primary { background: var(--accent); color: #08091a; box-shadow: 0 8px 28px -10px rgba(110,142,251,0.7); }
-  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 14px 36px -10px rgba(110,142,251,0.85); }
+  .btn-primary { background: var(--accent); color: #fff; box-shadow: 0 8px 28px -10px rgba(3,122,104,0.7); }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 14px 36px -10px rgba(3,122,104,0.85); }
   .btn-ghost { border-color: var(--line-2); color: var(--ink); background: rgba(255,255,255,0.02); }
-  .btn-ghost:hover { transform: translateY(-2px); border-color: var(--accent); background: rgba(110,142,251,0.08); }
+  .btn-ghost:hover { transform: translateY(-2px); border-color: var(--accent); background: rgba(3,122,104,0.08); }
   .iconlinks { display: flex; gap: 4px; margin-left: 4px; }
-  .iconlinks a { font-size: 13px; color: var(--muted); text-decoration: none; padding: 9px 11px; border-radius: 9px;
+  .iconlinks a { font-size: 13px; color: var(--muted); text-decoration: none; padding: 9px 11px; border-radius: 8px;
     border: 1px solid var(--line); transition: color .2s, border-color .2s; }
   .iconlinks a:hover { color: var(--ink); border-color: var(--accent); }
 
@@ -109,44 +134,51 @@
     background: linear-gradient(180deg, var(--accent), var(--accent-2)); opacity: 0.5; }
   .job { position: relative; padding-bottom: 34px; }
   .job::before { content: ""; position: absolute; left: -26px; top: 6px; width: 10px; height: 10px;
-    border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 4px rgba(110,142,251,0.16); }
+    border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 4px rgba(3,122,104,0.16); }
   .job .top { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 12px; }
   .job .role { font-size: 18px; font-weight: 700; }
-  .job .org { color: var(--accent); font-weight: 600; }
+  .job .org { color: var(--accent-2); font-weight: 600; }
   .job .when { margin-left: auto; font-family: var(--mono); font-size: 12px; color: var(--faint); }
   .job ul { margin: 10px 0 0; padding-left: 18px; }
   .job li { margin: 6px 0; color: #cdd5e0; font-size: 15px; }
   .job li b { color: #fff; }
 
   /* projects */
-  .feature { margin-top: 34px; border: 1px solid var(--line); border-radius: 18px; overflow: hidden;
-    background: linear-gradient(180deg, rgba(110,142,251,0.06), transparent 40%), var(--surface);
+  .feature { position: relative; margin-top: 34px; border: 1px solid var(--line); border-radius: 12px; overflow: hidden;
+    background: linear-gradient(180deg, rgba(3,122,104,0.06), transparent 40%), var(--surface);
     transition: border-color .25s var(--ease), transform .25s var(--ease); }
   .feature:hover { border-color: var(--line-2); }
+  /* border beam: a short teal arc circles the featured card's 1px edge every 7s */
+  @property --beam { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
+  .feature::after { content: ""; position: absolute; inset: 0; border-radius: inherit; padding: 1px; pointer-events: none;
+    background: conic-gradient(from var(--beam), transparent 0 72%, rgba(47,184,166,0.85) 86%, transparent 100%);
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude;
+    animation: beam 7s linear infinite; }
+  @keyframes beam { to { --beam: 360deg; } }
   .feature .pad { padding: 28px; }
-  .feature .tag { font-family: var(--mono); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent-2); }
+  .feature .tag { font-size: 13px; font-weight: 600; color: var(--accent-2); }
   .feature h3 { font-size: 26px; letter-spacing: -0.02em; margin: 10px 0 0; }
   .feature p { color: #cdd5e0; max-width: 70ch; margin: 12px 0 0; }
   .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
-  .chip { font-family: var(--mono); font-size: 12px; color: var(--muted); border: 1px solid var(--line);
+  .chip { font-size: 13px; font-weight: 500; color: var(--muted); border: 1px solid var(--line);
     border-radius: 999px; padding: 5px 12px; }
-  .chip b { color: var(--accent); }
+  .chip b { color: var(--accent-2); }
   .feature .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 22px; }
   .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px; }
   @media (max-width: 760px) { .grid-2 { grid-template-columns: 1fr; } }
-  .pcard { border: 1px solid var(--line); border-radius: 14px; padding: 22px; background: var(--surface);
-    transition: transform .2s var(--ease), border-color .2s; }
-  .pcard:hover { transform: translateY(-3px); border-color: var(--line-2); }
-  .pcard .tag { font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); }
+  .grid-2 > .pcard:nth-child(3) { grid-column: 1 / -1; }
+  .pcard { border: 1px solid var(--line); border-radius: 12px; padding: 22px; background: var(--surface);
+    transition: border-color .2s; }
+  .pcard:hover { border-color: var(--line-2); }
+  .pcard .tag { font-size: 13px; font-weight: 600; color: var(--accent-2); }
   .pcard h3 { font-size: 18px; margin: 8px 0 0; }
   .pcard p { color: #cdd5e0; font-size: 14.5px; margin: 8px 0 0; }
 
   /* skills */
   .skills { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-top: 30px; }
   @media (max-width: 760px) { .skills { grid-template-columns: 1fr; } }
-  .skgroup { border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px; background: var(--surface); }
-  .skgroup h4 { margin: 0 0 12px; font-family: var(--mono); font-size: 12px; letter-spacing: 0.08em;
-    text-transform: uppercase; color: var(--accent-2); }
+  .skgroup { border: 1px solid var(--line); border-radius: 12px; padding: 18px 20px; background: var(--surface); }
+  .skgroup h4 { margin: 0 0 12px; font-size: 13px; font-weight: 600; color: var(--accent-2); }
   .tags { display: flex; flex-wrap: wrap; gap: 7px; }
   .tags span { font-size: 13px; color: #cdd5e0; background: rgba(255,255,255,0.04); border: 1px solid var(--line);
     border-radius: 8px; padding: 5px 10px; }
@@ -154,13 +186,13 @@
   /* education + contact */
   .edu { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 30px; }
   @media (max-width: 760px) { .edu { grid-template-columns: 1fr; } }
-  .edu .card { border: 1px solid var(--line); border-radius: 14px; padding: 20px; background: var(--surface); }
+  .edu .card { border: 1px solid var(--line); border-radius: 12px; padding: 20px; background: var(--surface); }
   .edu .card .h { font-weight: 700; font-size: 16px; }
   .edu .card .s { color: var(--muted); font-size: 14px; margin-top: 4px; }
   .edu .card .m { font-family: var(--mono); font-size: 12px; color: var(--faint); margin-top: 8px; }
 
-  .contact { margin-top: 34px; border: 1px solid var(--line); border-radius: 18px; padding: 34px;
-    background: linear-gradient(180deg, rgba(79,214,192,0.06), transparent 50%), var(--surface); text-align: center; }
+  .contact { margin-top: 34px; border: 1px solid var(--line); border-radius: 12px; padding: 34px;
+    background: linear-gradient(180deg, rgba(47,184,166,0.06), transparent 50%), var(--surface); text-align: center; }
   .contact h3 { font-size: clamp(22px, 3vw, 30px); letter-spacing: -0.02em; margin: 0; }
   .contact p { color: var(--muted); margin: 10px auto 0; max-width: 52ch; }
   .contact .actions { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin-top: 24px; }
@@ -169,18 +201,57 @@
     display: flex; flex-wrap: wrap; gap: 8px; justify-content: space-between; }
   footer .sig { font-family: var(--mono); color: var(--muted); }
 
-  .reveal { opacity: 0; transform: translateY(20px); transition: opacity .7s var(--ease), transform .7s var(--ease); }
+  .reveal { opacity: 0; transform: translateY(20px); transition: opacity .6s var(--out), transform .9s var(--spring); }
   .reveal.in { opacity: 1; transform: none; }
-  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } .reveal { opacity: 1; transform: none; } }
+  /* the eyebrow's short teal line draws in with its section */
+  .eyebrow::before { transition: width .8s var(--spring); }
+  .eyebrow.reveal:not(.in)::before { width: 0; }
+
+  /* --- cool layer: spotlight borders, tilt --- */
+  .spot { position: relative; }
+  .spot::before { content: ""; position: absolute; inset: -1px; border-radius: inherit; pointer-events: none;
+    background: radial-gradient(260px circle at var(--mx, 50%) var(--my, 50%), rgba(3,122,104,0.15), transparent 65%);
+    opacity: 0; transition: opacity .35s; }
+  .spot:hover::before { opacity: 1; }
+  .tilt { will-change: transform; transition: opacity .6s var(--out), transform .6s var(--spring); }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; }
+    .reveal { opacity: 1; transform: none; } #water, .feature::after { display: none; } }
+
+  /* mobile nav: the link row collapses into a toggled panel below 820px */
+  .nav-toggle { display: none; background: none; border: 1px solid var(--line-2); border-radius: 8px;
+    color: var(--ink); padding: 7px 10px; cursor: pointer; line-height: 0; }
+  .nav-toggle:hover { border-color: var(--accent); }
+  .nav-toggle svg { width: 18px; height: 18px; display: block; }
+  @media (max-width: 820px) {
+    /* no flex-wrap here: the nav is a fixed 60px, so wrapping pushes items outside it */
+    .nav-toggle { display: inline-flex; align-items: center; }
+    .nav-links { display: none; position: fixed; top: 60px; left: 0; right: 0; flex-direction: column;
+      align-items: stretch; gap: 2px; padding: 10px 20px 16px;
+      background: rgba(7,8,11,0.96); backdrop-filter: blur(14px); border-bottom: 1px solid var(--line); }
+    .nav-links.open { display: flex; }
+    .nav-links a { padding: 12px; font-size: 15px; }
+    .nav-links a.active::after { left: 12px; right: auto; width: 18px; }
+  }
+  /* narrow phones: drop the wordmark, keep the NC ligature (it must stay 32x24 to stay crisp) */
+  @media (max-width: 420px) {
+    .container { padding: 0 16px; }
+    .brand span { display: none; }
+  }
 </style>
+<noscript><style>
+  /* every section is opacity:0 until the IntersectionObserver adds .in, so
+     without JS the whole page would render blank. Reveal it all up front. */
+  .reveal { opacity: 1 !important; transform: none !important; }
+  .eyebrow.reveal::before { width: 22px !important; }
+</style></noscript>
 </head>
 <body>
 <div class="progress" id="progress"></div>
 
 <nav class="nav">
   <div class="container">
-    <a class="brand" href="#top"><b>NICK</b> COMEAUX</a>
-    <div class="nav-links">
+    <a class="brand" aria-label="Nick Comeaux, home" href="#top"><svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M 152.3 47.7 L 150.1 45.5 L 147.8 43.5 L 145.4 41.6 L 142.9 39.7 L 140.4 38 L 137.8 36.4 L 135.1 34.8 L 132.4 33.4 L 129.6 32.2 L 126.7 31 L 123.8 29.9 L 120.9 29 L 117.9 28.2 L 114.9 27.5 L 111.9 27 L 108.8 26.5 L 105.8 26.2 L 102.7 26 L 99.6 26 L 96.5 26.1 L 93.5 26.3 L 90.4 26.6 L 87.3 27.1 L 84.3 27.7 L 81.3 28.4 L 78.4 29.2 L 77.6 41.7 L 80.1 40.7 L 82.7 39.9 L 85.4 39.1 L 88.3 38.4 L 91.2 37.8 L 94.3 37.4 L 97.4 37 L 100.6 36.8 L 103.9 36.8 L 107.2 36.9 L 110.5 37.2 L 113.8 37.7 L 117.1 38.3 L 120.4 39.1 L 123.6 40.1 L 126.8 41.3 L 129.9 42.6 L 132.8 44.1 L 135.7 45.7 L 138.4 47.5 L 141 49.3 L 143.5 51.3 L 145.8 53.3 L 147.9 55.4 L 149.8 57.5 L 151.6 59.7 Z" fill="#F4F5F7"/><path d="M 63 35.9 L 58 39.1 L 53.2 42.7 L 48.7 46.6 L 44.6 50.9 L 40.8 55.5 L 37.5 60.4 L 34.5 65.6 L 31.9 71 L 29.8 76.6 L 28.2 82.3 L 27 88.1 L 26.2 94 L 26 100 L 26.2 106 L 27 111.9 L 28.2 117.7 L 29.8 123.4 L 31.9 129 L 34.5 134.4 L 37.5 139.6 L 40.8 144.5 L 44.6 149.1 L 48.7 153.4 L 53.2 157.3 L 58 160.9 L 63 164.1 L 65.2 150.7 L 61.2 147.7 L 57.6 144.6 L 54.3 141.1 L 51.3 137.5 L 48.6 133.8 L 46.2 129.8 L 44.2 125.8 L 42.4 121.6 L 41 117.4 L 39.9 113.1 L 39.1 108.8 L 38.7 104.4 L 38.5 100 L 38.7 95.6 L 39.1 91.2 L 39.9 86.9 L 41 82.6 L 42.4 78.4 L 44.2 74.2 L 46.2 70.2 L 48.6 66.2 L 51.3 62.5 L 54.3 58.9 L 57.6 55.4 L 61.2 52.3 L 65.2 49.3 Z" fill="#037A68"/><path d="M 152.3 152.3 L 150.1 154.5 L 147.8 156.5 L 145.4 158.4 L 142.9 160.3 L 140.4 162 L 137.8 163.6 L 135.1 165.2 L 132.4 166.6 L 129.6 167.8 L 126.7 169 L 123.8 170.1 L 120.9 171 L 117.9 171.8 L 114.9 172.5 L 111.9 173 L 108.8 173.5 L 105.8 173.8 L 102.7 174 L 99.6 174 L 96.5 173.9 L 93.5 173.7 L 90.4 173.4 L 87.3 172.9 L 84.3 172.3 L 81.3 171.6 L 78.4 170.8 L 77.6 158.3 L 80.1 159.3 L 82.7 160.1 L 85.4 160.9 L 88.3 161.6 L 91.2 162.2 L 94.3 162.6 L 97.4 163 L 100.6 163.2 L 103.9 163.2 L 107.2 163.1 L 110.5 162.8 L 113.8 162.3 L 117.1 161.7 L 120.4 160.9 L 123.6 159.9 L 126.8 158.7 L 129.9 157.4 L 132.8 155.9 L 135.7 154.3 L 138.4 152.5 L 141 150.7 L 143.5 148.7 L 145.8 146.7 L 147.9 144.6 L 149.8 142.5 L 151.6 140.3 Z" fill="#F4F5F7"/></svg><span><b>Nick</b> Comeaux</span></a>
+    <div class="nav-links" id="nav-links">
       <a href="#about">About</a>
       <a href="#experience">Experience</a>
       <a href="#work">Work</a>
@@ -188,31 +259,38 @@
       <a href="#contact">Contact</a>
     </div>
     <a class="nav-cta" href="resume.html" target="_blank" rel="noopener">Résumé</a>
+    <button class="nav-toggle" id="nav-toggle" aria-label="Menu" aria-expanded="false" aria-controls="nav-links">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+    </button>
   </div>
 </nav>
 
 <header class="hero" id="top">
   <div class="hero-glow g1"></div>
   <div class="hero-glow g2"></div>
+  <canvas id="water" aria-hidden="true"></canvas>
   <div class="container">
-    <div class="eyebrow reveal">Systems &amp; AI Engineer · Huntsville, AL</div>
-    <h1 class="reveal">I build AI systems reliable enough to <span class="grad">run in production.</span></h1>
-    <p class="hero-sub reveal">I'm a systems and industrial engineer out of Texas A&amp;M, with time at Tesla and Boeing and over $7.4M in documented savings behind me. Now I build agentic AI end to end. I run my own company on a framework I wrote: about 4,000 automation runs a month, unattended.</p>
+    <div class="eyebrow reveal">Systems Engineer</div>
+    <h1 class="reveal">Your goals don't decide what happens.<br /><span class="grad">Your systems do.</span></h1>
+    <p class="hero-sub reveal">Building them is what I do. I'm an industrial and systems engineer out of Texas A&amp;M, with time at Tesla and Boeing. My work is finding the manual process and building the system that replaces it. At Tesla that was $3.4M in identified savings. At Boeing it cut executive briefing prep 67%. Lately it means building with AI.</p>
     <div class="hero-cta reveal">
       <a class="btn btn-primary" href="#work">See my work <span class="arr">→</span></a>
       <a class="btn btn-ghost" href="resume.html" target="_blank" rel="noopener">Résumé</a>
       <div class="iconlinks">
         <a href="https://www.linkedin.com/in/nicholas-comeaux" target="_blank" rel="noopener">LinkedIn</a>
+        <a href="https://github.com/Ncomeaux3" target="_blank" rel="noopener">GitHub</a>
       </div>
     </div>
 
     <div class="stats">
-      <div class="stat reveal"><div class="num" data-count="7.4" data-prefix="$" data-suffix="M+">$0</div><div class="lab">documented savings</div></div>
-      <div class="stat reveal"><div class="num" data-count="4000" data-suffix="+">0</div><div class="lab">monthly runs</div></div>
-      <div class="stat reveal"><div class="num" data-count="7">0</div><div class="lab">AI agents</div></div>
-      <div class="stat reveal"><div class="num" data-count="40" data-suffix="+">0</div><div class="lab">Python tools</div></div>
-      <div class="stat reveal"><div class="num" data-count="10" data-suffix="+">0</div><div class="lab">API integrations</div></div>
-      <div class="stat reveal"><div class="num" data-count="100">0</div><div class="lab">Lighthouse</div></div>
+      <!-- initial text is the final value, so the numbers still read correctly with JS off;
+           countUp() overwrites it and animates from 0 when the tile scrolls into view. -->
+      <div class="stat reveal"><div class="num" data-count="3.4" data-prefix="$" data-suffix="M">$3.4M</div><div class="lab">savings identified</div></div>
+      <div class="stat reveal"><div class="num" data-count="4" data-prefix="$" data-suffix="M/yr">$4M/yr</div><div class="lab">OPEX reduction</div></div>
+      <div class="stat reveal"><div class="num" data-count="67" data-suffix="%">67%</div><div class="lab">briefing prep cut</div></div>
+      <div class="stat reveal"><div class="num" data-count="95" data-suffix="%">95%</div><div class="lab">part buy-off, from 54%</div></div>
+      <div class="stat reveal"><div class="num" data-count="4000" data-prefix="~">~4,000</div><div class="lab">monthly runs, Soltreya (2026)</div></div>
+      <div class="stat reveal"><div class="num" data-count="40" data-suffix="+">40+</div><div class="lab">Python tools</div></div>
     </div>
   </div>
 </header>
@@ -224,16 +302,22 @@
     <h2 class="reveal">How I got here.</h2>
     <div class="rule reveal"></div>
     <p class="lead reveal" style="margin-top:26px;">
-      I started on factory floors. At Tesla I designed material flow and warehouse layouts for Cybertruck production, and
-      identified millions in savings by reworking dock assignments and storage. At Boeing I run an eight-person engineering
-      program as Scrum Master and built the data systems that cut executive reporting time by two thirds. Industrial engineering
-      is where my AI work comes from. I think in inputs, constraints, and outcomes, and I build systems I can trust to run on
-      their own.
+      I started on factory floors. At Alpha Measurement I pulled usage history out of the warehouse ERP, ranked every part by how
+      often it moved, and put the fastest movers closer to the pick face. Average pick time dropped 25%. At Tesla I built material
+      flow models and warehouse layouts across three production shops, and identified millions in savings in dock allocation and
+      storage. At Boeing I keep an eight-person engineering program on schedule as Scrum Master, and built the data systems that
+      cut executive reporting time by two thirds.
     </p>
     <p class="lead reveal" style="margin-top:16px;">
-      In early 2026 I started building agentic AI on nights and weekends. It turned into <b>Soltreya</b>, a quality platform
-      for regulated manufacturers that runs on a multi-agent framework I built from scratch. I'm now going all in on AI
-      engineering and looking for a founding engineer role I can commit to full time.
+      That is the whole pattern. Find the thing being done by hand, build what replaces it, measure what changed. Industrial
+      engineering is how I think about it: inputs, constraints, outcomes. It is also why the systems I build are ones I trust to
+      run on their own.
+    </p>
+    <p class="lead reveal" style="margin-top:16px;">
+      Outside work I build things at home to learn. From March to June 2026 I spent nights and weekends on <b>Soltreya</b>, a solo
+      side project: a quality platform for manufacturers on a multi-agent framework I wrote from scratch. It never had customers
+      and I stopped building it in June. Now I am building <b>Holon</b>, a personal operating system I use every day, where I work
+      on the parts of AI systems that are hardest to get right: approval gates, retrieval, and cost limits.
     </p>
   </section>
 
@@ -243,25 +327,29 @@
     <div class="rule reveal"></div>
     <div class="tl">
       <div class="job reveal">
-        <div class="top"><span class="role">Founder &amp; Lead Engineer,</span> <span class="org">Soltreya</span><span class="when">Mar 2026 - Present</span></div>
-        <ul>
-          <li>Architected the <b>WAT framework</b> (Workflows, Agents, Tools) so multi-step AI runs unattended without compounding errors: I scope Claude to the judgment calls and keep execution in deterministic Python I wrote.</li>
-          <li>Run the company on it in production: <b>~4,000 scheduled and event-driven runs a month</b> on Trigger.dev, a Claude orchestrator routing to <b>7 specialist agents</b>, <b>40+ Python tools</b>, and 17 background jobs.</li>
-          <li>Built the product (Next.js, Supabase, Stripe) to a <b>100 Lighthouse score with zero accessibility violations</b>, behind a four-gate security model (rate limiting, auth, tenant isolation, cost caps).</li>
-        </ul>
-      </div>
-      <div class="job reveal">
         <div class="top"><span class="role">Systems Engineer II,</span> <span class="org">Boeing Intelligence &amp; Analytics</span><span class="when">Oct 2024 - Present</span></div>
         <ul>
-          <li>Keep an 8-person engineering program across 3 partner companies on schedule as Scrum Master, surfacing interface risk early through technical syncs and milestone reviews.</li>
-          <li>Cut executive briefing prep time <b>67%</b> by designing the program's authoritative data source and automated KPI dashboards (Qlik Sense).</li>
+          <li>Coordinate systems integration across <b>3 partner companies and 6 government organizations</b>, and run the Agile process as Scrum Master for an <b>8-person engineering team</b>.</li>
+          <li>Built the team's authoritative data source, the single record of status, dates, and owners for <b>48 integration activities</b>, now self-service for the whole team. Cut executive briefing prep <b>67%</b> and fed automated KPI dashboards.</li>
+          <li>Own the program's detailed action plan: a <b>200+ step</b>, multi-year process flow agreed with 3 companies and 6 government organizations to sequence parallel work and catch schedule conflicts.</li>
+          <li>Built a program tracker that uses Power Query to roll <b>10+ engineering teams'</b> status and escalations into one dashboard for weekly leadership reviews. <b>20+ items</b> escalated and <b>8 actions</b> assigned in its first two weeks.</li>
+          <li>Built a <b>Qlik Sense</b> dashboard giving chief engineers a live view of integration risk, with <b>50+ findings</b> tracked to resolution. One of <b>3 finalists</b> in a business-unit-wide innovation competition for it, demoed live to the executives judging.</li>
+          <li>Defined the compliance assessment process across both sides of the interface for <b>336+ requirements</b>, standardizing how each side verifies, documents, and reports.</li>
         </ul>
       </div>
       <div class="job reveal">
         <div class="top"><span class="role">Industrial Engineering Intern, Material Flow,</span> <span class="org">Tesla</span><span class="when">Jan 2023 - Aug 2023</span></div>
         <ul>
           <li>Identified <b>$3.4M</b> in dock-allocation savings and cut storage 66%; redesigned delivery routes for <b>$4M/yr</b> additional OPEX reduction, freeing 16,000 sq ft.</li>
-          <li>Built material-flow models for 3 shops (250+ parts) in Revit and AutoCAD; raised lineside part buy-off rate from <b>54% to 95%</b>.</li>
+          <li>Built material-flow models for 3 shops (250+ parts) in Revit and AutoCAD; raised lineside part buy-off rate from <b>54% to 95%</b> through validation meetings with four engineering disciplines.</li>
+        </ul>
+      </div>
+      <div class="job reveal">
+        <div class="top"><span class="role">Industrial Engineering Intern,</span> <span class="org">Alpha Measurement Solutions</span><span class="when">Summers 2021 &amp; 2022</span></div>
+        <ul>
+          <li>Cut average pick time <b>25%</b>: pulled historical usage from <b>ALERE ERP</b>, ran an <b>ABC analysis</b> to rank parts by running volume, and reslotted the fastest movers closer to the pick face.</li>
+          <li>Created the processes and work instructions that doubled production, adding <b>5,000 units a month</b>, and established 5S lean workspaces across shipping and the raw material warehouse.</li>
+          <li>Returned as the Industrial Engineering intern after a first summer as Special Projects intern, running the warehouse's ERP inventory transactions and moving parts out to the production shops. Doing the job by hand first is what showed me what to optimize.</li>
         </ul>
       </div>
       <div class="job reveal">
@@ -280,13 +368,13 @@
 
     <div class="feature reveal">
       <div class="pad">
-        <div class="tag">My company</div>
+        <div class="tag">Solo side project · Mar - Jun 2026</div>
         <h3>Soltreya: AI quality platform</h3>
-        <p>Soltreya helps regulated manufacturers handle corrective actions: the root-cause and paperwork work quality
-          engineers otherwise spend weeks on per finding. It finds and scores target factories, drafts outreach in my voice
-          for me to approve, runs the live Quality Hub product, and keeps itself running across 17 background jobs behind a
-          four-gate security model. I built and operate the whole thing myself, for manufacturers working under standards like
-          IATF 16949 and ISO 9001.</p>
+        <p>A side project I built alone, at home, to learn to build and deploy production software. It was aimed at
+          corrective actions in regulated manufacturing: the root-cause and paperwork work quality engineers otherwise
+          spend weeks on per finding. It found and scored target factories, drafted outreach for me to approve, ran the
+          Quality Hub app, and kept itself running across 17 background jobs behind a four-gate security model. It never
+          had customers, and I stopped building it in June 2026.</p>
         <div class="chips">
           <span class="chip"><b>~4,000</b> runs/mo</span>
           <span class="chip"><b>7</b> agents</span>
@@ -310,10 +398,21 @@
           deterministic code handles execution, so 90%-accurate steps never compound into failure.</p>
       </div>
       <div class="pcard reveal">
-        <div class="tag">Production automation</div>
-        <h3>40+ Python tools</h3>
-        <p>40+ Python tools and 17 TypeScript background jobs for sourcing, research, reporting, and outreach. They run on a
-          schedule or fire from Telegram, email, and cron, and connect to 10+ external APIs.</p>
+        <div class="tag">Solo side project · in daily use</div>
+        <h3>Holon</h3>
+        <p>A personal operating system that pulls finances, calendar, email, and documents into one dashboard. Claude reaches
+          it through an MCP server I built, and every change it wants waits for my approval. Search mixes embeddings with
+          full-text, and every model call is logged and capped by cost. 13 modules, 12 integrations, 1,200+ passing tests.
+          <a href="https://github.com/Ncomeaux3/holon" target="_blank" rel="noopener">View the repo</a></p>
+      </div>
+      <div class="pcard reveal">
+        <div class="tag">Open data pipeline</div>
+        <h3>bellwether</h3>
+        <p>Open archive of developer-infrastructure pricing, built in four days. A TypeScript pipeline collected 27 public
+          pricing pages, Claude pulled out structured prices, a change was only reported after two observations agreed,
+          and Claude wrote a cited weekly digest. Not running since August.
+          <a href="https://bellwether-nicholas-projects-cdfeb046.vercel.app" target="_blank" rel="noopener">See the board</a> ·
+          <a href="https://github.com/Ncomeaux3/bellwether" target="_blank" rel="noopener">View the repo</a></p>
       </div>
     </div>
   </section>
@@ -324,10 +423,10 @@
     <div class="rule reveal"></div>
     <div class="skills">
       <div class="skgroup reveal"><h4>AI &amp; Automation</h4><div class="tags">
-        <span>Claude API</span><span>Multi-agent orchestration</span><span>Prompt engineering</span><span>Trigger.dev</span><span>Agent tooling</span><span>RAG</span>
+        <span>Claude API</span><span>MCP servers</span><span>RAG &amp; hybrid search</span><span>Multi-agent orchestration</span><span>Prompt engineering</span><span>Trigger.dev</span><span>Agent tooling</span>
       </div></div>
       <div class="skgroup reveal"><h4>Languages</h4><div class="tags">
-        <span>Python</span><span>TypeScript</span><span>SQL</span><span>VBA</span><span>MATLAB</span>
+        <span>Python</span><span>TypeScript</span><span>JavaScript</span><span>SQL</span><span>VBA</span>
       </div></div>
       <div class="skgroup reveal"><h4>Web &amp; Infra</h4><div class="tags">
         <span>Next.js</span><span>Vercel</span><span>Supabase</span><span>Stripe</span><span>Sentry</span><span>GitHub Actions</span>
@@ -335,11 +434,11 @@
       <div class="skgroup reveal"><h4>Systems &amp; Process</h4><div class="tags">
         <span>Systems engineering</span><span>Lean Six Sigma (Green Belt)</span><span>Scrum</span><span>Process improvement</span><span>Risk management</span>
       </div></div>
-      <div class="skgroup reveal"><h4>Modeling &amp; CAD</h4><div class="tags">
-        <span>SolidWorks</span><span>AutoCAD</span><span>Revit</span><span>CATIA</span><span>SIMIO</span><span>Qlik Sense</span>
+      <div class="skgroup reveal"><h4>Modeling &amp; BI</h4><div class="tags">
+        <span>AutoCAD</span><span>Revit</span><span>Qlik Sense</span><span>Power BI</span><span>SIMIO (coursework)</span>
       </div></div>
       <div class="skgroup reveal"><h4>Domain</h4><div class="tags">
-        <span>Manufacturing operations</span><span>Material flow</span><span>Corrective action (CAR/SCAR)</span><span>Cost modeling</span>
+        <span>Manufacturing operations</span><span>Material flow</span><span>ABC analysis &amp; warehouse slotting</span><span>Corrective action (CAR/SCAR)</span><span>Cost modeling</span>
       </div></div>
     </div>
   </section>
@@ -350,17 +449,18 @@
     <div class="rule reveal"></div>
     <div class="edu">
       <div class="card reveal"><div class="h">B.S. Industrial &amp; Systems Engineering</div><div class="s">Texas A&amp;M University · College Station, TX</div><div class="m">2024</div></div>
-      <div class="card reveal"><div class="h">Certifications</div><div class="s">Lean Six Sigma Green Belt</div><div class="m">Texas A&amp;M Industrial &amp; Systems Engineering</div></div>
+      <div class="card reveal"><div class="h">Credentials</div><div class="s">Active U.S. Security Clearance · Lean Six Sigma Green Belt · Data Center Operations Certificate</div><div class="m">Texas A&amp;M University</div></div>
     </div>
   </section>
 
   <section class="block" id="contact">
     <div class="contact reveal">
-      <h3>I'm looking for a founding engineer role.</h3>
-      <p>If you're building something hard and want an engineer who ships to production and owns the whole stack, reach out. I can start full time on offer.</p>
+      <h3>Let's talk.</h3>
+      <p>Questions about the WAT framework, Soltreya, or anything else on this page? Reach out. I read everything that lands in my inbox.</p>
       <div class="actions">
         <a class="btn btn-primary" href="mailto:nicholascomeaux00@gmail.com">nicholascomeaux00@gmail.com</a>
         <a class="btn btn-ghost" href="https://www.linkedin.com/in/nicholas-comeaux" target="_blank" rel="noopener">LinkedIn</a>
+        <a class="btn btn-ghost" href="https://github.com/Ncomeaux3" target="_blank" rel="noopener">GitHub</a>
         <a class="btn btn-ghost" href="resume.html" target="_blank" rel="noopener">Résumé</a>
       </div>
     </div>
@@ -368,7 +468,6 @@
 
   <footer>
     <span class="sig">Nick Comeaux · Huntsville, AL</span>
-    <span>Built from scratch · 2026</span>
   </footer>
 
 </main>
@@ -377,11 +476,24 @@
   (function () {
     var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     var prog = document.getElementById('progress');
+    var nav = document.querySelector('.nav');
     function onScroll() {
       var h = document.documentElement, max = h.scrollHeight - h.clientHeight;
       prog.style.width = (max > 0 ? (h.scrollTop / max) * 100 : 0) + '%';
+      nav.classList.toggle('scrolled', h.scrollTop > 40);
     }
     window.addEventListener('scroll', onScroll, { passive: true }); onScroll();
+
+    // mobile menu: the link row is display:none under 820px without this
+    var navToggle = document.getElementById('nav-toggle'), navLinks = document.getElementById('nav-links');
+    function setMenu(open) {
+      navLinks.classList.toggle('open', open);
+      navToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    }
+    navToggle.addEventListener('click', function () { setMenu(!navLinks.classList.contains('open')); });
+    navLinks.addEventListener('click', function (e) { if (e.target.tagName === 'A') setMenu(false); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') setMenu(false); });
+    window.addEventListener('resize', function () { if (innerWidth > 820) setMenu(false); }, { passive: true });
 
     function countUp(el) {
       var to = parseFloat(el.dataset.count), pre = el.dataset.prefix || '', suf = el.dataset.suffix || '';
@@ -415,14 +527,14 @@
       return sec ? { a: a, sec: sec } : null;
     }).filter(Boolean);
     function spy() {
-      // active = the section whose top is the lowest one still at/above the trigger line —
+      // active = the section whose top is the lowest one still at/above the trigger line,
       // chosen by position, not array order, so nav order never has to match document order.
       var active = null, best = -Infinity;
       items.forEach(function (it) {
         var top = it.sec.getBoundingClientRect().top;
         if (top <= 120 && top > best) { best = top; active = it.a; }
       });
-      // at the bottom, the last section may be too short to reach the trigger line — force it
+      // at the bottom, the last section may be too short to reach the trigger line, so force it
       if (items.length && window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2) {
         active = items.reduce(function (lo, it) {
           return it.sec.getBoundingClientRect().top > lo.sec.getBoundingClientRect().top ? it : lo;
@@ -432,7 +544,127 @@
     }
     window.addEventListener('scroll', spy, { passive: true });
     window.addEventListener('resize', spy, { passive: true }); spy();
+
+    /* --- water: pointer ripples bend the hero's dot grid. Plain WebGL, no library.
+       Each pointer move or tap adds a wave; the loop runs only while a wave is alive. --- */
+    (function () {
+      var hero = document.getElementById('top'), canvas = document.getElementById('water');
+      if (reduce || !canvas) return;
+      var gl = canvas.getContext('webgl', { alpha: false, antialias: false, depth: false, powerPreference: 'low-power' });
+      if (!gl) return;
+      var MAX = 10, LIFE = 2.6;
+      var VS = 'attribute vec2 a; void main() { gl_Position = vec4(a, 0., 1.); }';
+      var FS = [
+        'precision mediump float;',
+        'uniform vec2 u_view; uniform float u_dpr; uniform float u_time; uniform float u_scroll; uniform vec4 u_waves[10];',
+        'float blob(vec2 p, vec2 c, vec2 s) { vec2 d = (p - c) / s; return exp(-dot(d, d) * .5); }',
+        'void main() {',
+        '  vec2 px = gl_FragCoord.xy / u_dpr; px.y = u_view.y - px.y;',       // css px, y down, same origin as the page
+        '  float aspect = u_view.x / u_view.y; vec2 pt = px / u_view.y;',
+        '  vec2 disp = vec2(0.); float light = 0.;',
+        '  for (int i = 0; i < 10; i++) {',
+        '    float age = u_time - u_waves[i].z;',
+        '    if (age > 0. && age < 2.6 && u_waves[i].w > 0.) {',
+        '      vec2 delta = pt - vec2(u_waves[i].x * aspect, u_waves[i].y); float d = length(delta);',
+        '      float wave = d - age * .27;',
+        '      float env = exp(-wave * wave * 190.) * pow(1. - age / 2.6, 2.);',
+        '      float bend = sin(wave * 82.) * env * u_waves[i].w;',
+        '      disp += delta / max(d, .001) * bend * .012;',
+        '      light += cos(wave * 82.) * env * u_waves[i].w;',
+        '    }',
+        '  }',
+        '  vec2 p = px + disp * u_view.y;',
+        '  vec3 c = vec3(7., 8., 10.) / 255.;',                                 // --bg
+        '  vec2 g = mod(vec2(p.x, p.y - u_scroll) - 1., 38.) - 19.;',           // body dot grid: 1px dots at 20,20 per 38px tile, fixed to the viewport
+        '  c += .055 * (1. - smoothstep(.7, 1.2, length(g)));',
+        '  c = mix(c, vec3(3., 122., 104.) / 255., .11 * blob(p, vec2(u_view.x + 180., 230.), vec2(300., 220.)));',   // .hero-glow.g1
+        '  c = mix(c, vec3(47., 184., 166.) / 255., .06 * blob(p, vec2(120., 380.), vec2(220., 180.)));',            // .hero-glow.g2
+        '  c = mix(c, vec3(3., 122., 104.) / 255., .15 * blob(p, vec2(u_view.x * .8, -300.), vec2(450., 300.)));',    // body top-right tint
+        '  c += vec3(.18, .72, .65) * (max(light, 0.) * .10 + min(light, 0.) * .04);',  // teal crest: brightens more than it darkens
+        '  gl_FragColor = vec4(c, 1.);',
+        '}'].join('\n');
+      function sh(type, src) {
+        var o = gl.createShader(type); gl.shaderSource(o, src); gl.compileShader(o);
+        if (!gl.getShaderParameter(o, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(o));
+        return o;
+      }
+      var prog = gl.createProgram();
+      try {
+        gl.attachShader(prog, sh(gl.VERTEX_SHADER, VS)); gl.attachShader(prog, sh(gl.FRAGMENT_SHADER, FS)); gl.linkProgram(prog);
+        if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(prog));
+      } catch (e) { return; }
+      gl.useProgram(prog);
+      gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1]), gl.STATIC_DRAW);
+      var a = gl.getAttribLocation(prog, 'a'); gl.enableVertexAttribArray(a); gl.vertexAttribPointer(a, 2, gl.FLOAT, false, 0, 0);
+      var U = {}; ['u_view', 'u_dpr', 'u_time', 'u_scroll', 'u_waves'].forEach(function (n) { U[n] = gl.getUniformLocation(prog, n); });
+      var waves = new Float32Array(MAX * 4), wi = 0, lastWave = -LIFE, frame = 0, visible = true;
+      function allowed() { return visible && !document.hidden; }
+      function draw(now) {
+        frame = 0;
+        gl.uniform1f(U.u_time, now / 1000); gl.uniform1f(U.u_scroll, window.scrollY); gl.uniform4fv(U.u_waves, waves);
+        gl.drawArrays(gl.TRIANGLES, 0, 6); canvas.classList.add('ready');
+        if (allowed() && now / 1000 - lastWave < LIFE) frame = requestAnimationFrame(draw);
+      }
+      function wake() { if (!frame && allowed()) frame = requestAnimationFrame(draw); }
+      function resize() {
+        var r = hero.getBoundingClientRect(), dpr = Math.min(window.devicePixelRatio || 1, 2);
+        canvas.width = Math.round(r.width * dpr); canvas.height = Math.round(r.height * dpr);
+        gl.viewport(0, 0, canvas.width, canvas.height); gl.uniform2f(U.u_view, r.width, r.height); gl.uniform1f(U.u_dpr, dpr);
+        wake();
+      }
+      var last = { t: 0, x: 0, y: 0 };
+      function ripple(e, strength) {
+        if (e.target.closest('a,button')) return;
+        var r = hero.getBoundingClientRect(), x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
+        if (x < 0 || x > 1 || y < 0 || y > 1) return;
+        var i = wi * 4; waves[i] = x; waves[i + 1] = y; waves[i + 2] = performance.now() / 1000; waves[i + 3] = strength;
+        wi = (wi + 1) % MAX; lastWave = waves[i + 2]; wake();
+      }
+      hero.addEventListener('pointermove', function (e) {
+        if (e.pointerType !== 'mouse' || e.buttons) return;
+        var now = performance.now();
+        if (now - last.t < 100 || Math.hypot(e.clientX - last.x, e.clientY - last.y) < 16) return;
+        last = { t: now, x: e.clientX, y: e.clientY }; ripple(e, 0.4);
+      }, { passive: true });
+      hero.addEventListener('pointerdown', function (e) { if (e.isPrimary && e.button === 0) ripple(e, 1); }, { passive: true });
+      new IntersectionObserver(function (en) { visible = en[0].isIntersecting; wake(); }).observe(hero);
+      document.addEventListener('visibilitychange', wake);
+      canvas.addEventListener('webglcontextlost', function (e) { e.preventDefault(); canvas.classList.remove('ready'); });
+      window.addEventListener('scroll', wake, { passive: true });   // the CSS grid is viewport-fixed, so redraw one frame per scroll
+      window.addEventListener('resize', resize, { passive: true }); resize();
+    })();
+
+    /* --- cool layer --- */
+    var fine = window.matchMedia('(pointer: fine)').matches;
+    if (fine && !reduce) {
+      // spotlight borders + 3D tilt on cards
+      var cards = document.querySelectorAll('.pcard, .feature, .skgroup, .edu .card, .contact');
+      cards.forEach(function (el) { el.classList.add('spot'); });
+      document.querySelectorAll('.pcard, .feature').forEach(function (el) { el.classList.add('tilt'); });
+      document.addEventListener('pointermove', function (e) {
+        cards.forEach(function (el) {
+          var r = el.getBoundingClientRect();
+          if (e.clientX < r.left - 40 || e.clientX > r.right + 40 || e.clientY < r.top - 40 || e.clientY > r.bottom + 40) return;
+          el.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+          el.style.setProperty('--my', (e.clientY - r.top) + 'px');
+          if (el.classList.contains('tilt')) {
+            var px = (e.clientX - r.left) / r.width - 0.5, py = (e.clientY - r.top) / r.height - 0.5;
+            var inside = px >= -0.5 && px <= 0.5 && py >= -0.5 && py <= 0.5;
+            el.style.transform = inside
+              ? 'perspective(900px) rotateX(' + (-py * 5) + 'deg) rotateY(' + (px * 5) + 'deg) translateY(-2px)'
+              : '';
+          }
+        });
+      }, { passive: true });
+      document.querySelectorAll('.tilt').forEach(function (el) {
+        el.addEventListener('pointerleave', function () { el.style.transform = ''; });
+      });
+    }
   })();
 </script>
+<!-- Vercel Web Analytics (first-party, no cookies). -->
+<script>window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };</script>
+<script defer src="/_vercel/insights/script.js"></script>
 </body>
 </html>

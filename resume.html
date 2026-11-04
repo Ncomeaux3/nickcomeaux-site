@@ -4,37 +4,57 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Nick Comeaux | Résumé</title>
-<link rel="icon" href="data:," />
+<meta property="og:type" content="profile" />
+<meta property="og:title" content="Nick Comeaux | Résumé" />
+<meta name="description" content="Résumé of Nicholas Comeaux: Systems Engineer. Tesla and Boeing background, Texas A&amp;M ISE, active U.S. security clearance." />
+<meta property="og:description" content="Systems Engineer. Tesla and Boeing background, Texas A&amp;M ISE." />
+<meta property="og:url" content="https://nicholascomeaux.com/resume.html" />
+<meta property="og:image" content="https://nicholascomeaux.com/og-9fe8f705.jpg" />
+<meta property="og:image:type" content="image/jpeg" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="627" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="theme-color" content="#07080A" />
+<link rel="canonical" href="https://nicholascomeaux.com/resume.html" />
+<link rel="icon" href="favicon-16.png" type="image/png" sizes="16x16" />
+<link rel="icon" href="favicon.png" type="image/png" sizes="32x32" />
+<link rel="apple-touch-icon" href="apple-touch-icon.png" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
 <style>
-  :root { --ink:#15171c; --muted:#52596a; --line:#e3e6ec; --accent:#2f55e6; }
+  :root { --ink:#0C0E11; --muted:#6B7079; --line:#E1DFD8; --accent:#037A68; }
   * { box-sizing: border-box; }
-  body { margin: 0; background: #6b7280; font-family: 'Hanken Grotesk', system-ui, sans-serif;
+  /* page chrome uses the site's dark tokens; --accent is the brand green #037A68,
+     which is dark enough to stay legible on white paper. */
+  body { margin: 0; background: #07080A; font-family: 'Manrope', system-ui, sans-serif;
     color: var(--ink); line-height: 1.5; -webkit-font-smoothing: antialiased; }
-  .bar { max-width: 8.5in; margin: 0 auto; padding: 14px 0; display: flex; justify-content: space-between;
-    align-items: center; color: #fff; font-size: 13px; }
-  .bar a { color: #fff; text-decoration: none; border: 1px solid rgba(255,255,255,0.5); padding: 7px 14px;
+  .bar { max-width: 8.5in; margin: 0 auto; padding: 16px 0; display: flex; justify-content: space-between;
+    align-items: center; color: #F4F5F7; font-size: 13px; }
+  .bar .home { display: inline-flex; align-items: center; gap: 10px; border: none; padding: 0;
+    font-family: 'Manrope', system-ui, sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 0.01em; }
+  .bar .home svg { width: 22px; height: 22px; display: block; }
+  .bar a { color: #F4F5F7; text-decoration: none; border: 1px solid rgba(255,255,255,0.12); padding: 7px 14px;
     border-radius: 8px; font-weight: 600; }
-  .bar a:hover { background: rgba(255,255,255,0.12); }
+  .bar a:hover { border-color: #037A68; }
+  .bar a.home:hover { color: #fff; }
   .page { max-width: 8.5in; margin: 0 auto 40px; background: #fff; padding: 0.6in 0.7in;
     box-shadow: 0 20px 60px rgba(0,0,0,0.35); }
   header.r { border-bottom: 2px solid var(--ink); padding-bottom: 14px; }
   header.r h1 { font-size: 30px; letter-spacing: -0.02em; margin: 0; }
   header.r .title { color: var(--accent); font-weight: 600; font-size: 15px; margin-top: 3px; }
-  header.r .contact { font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: var(--muted);
+  header.r .contact { font-family: 'Manrope', system-ui, sans-serif; font-size: 11.5px; color: var(--muted);
     margin-top: 9px; display: flex; flex-wrap: wrap; gap: 4px 16px; }
   header.r .contact a { color: var(--muted); text-decoration: none; }
-  .summary { margin: 14px 0 0; font-size: 13.5px; color: #2a2e38; }
-  h2.sec { font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent);
+  .summary { margin: 14px 0 0; font-size: 13.5px; color: #3A3D44; }
+  h2.sec { font-size: 12px; letter-spacing: 0.02em; text-transform: none; color: var(--accent);
     margin: 22px 0 8px; padding-bottom: 4px; border-bottom: 1px solid var(--line); }
   .role { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-top: 12px; }
   .role .l { font-size: 14.5px; } .role .l b { font-weight: 700; }
   .role .l .org { color: var(--accent); font-weight: 600; }
-  .role .when { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); white-space: nowrap; }
+  .role .when { font-family: 'Manrope', system-ui, sans-serif; font-size: 11px; color: var(--muted); white-space: nowrap; }
   ul.b { margin: 6px 0 0; padding-left: 17px; }
-  ul.b li { margin: 4px 0; font-size: 12.8px; color: #2a2e38; }
+  ul.b li { margin: 4px 0; font-size: 12.8px; color: #3A3D44; }
   .skills-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 26px; font-size: 12.8px; margin-top: 6px; }
   .skills-grid div { padding: 2px 0; }
   .skills-grid b { font-weight: 700; }
@@ -49,74 +69,100 @@
 </head>
 <body>
   <div class="bar">
-    <a href="index.html">← Back to site</a>
+    <a class="home" aria-label="Nick Comeaux, home" href="index.html"><svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M 152.3 47.7 L 150.1 45.5 L 147.8 43.5 L 145.4 41.6 L 142.9 39.7 L 140.4 38 L 137.8 36.4 L 135.1 34.8 L 132.4 33.4 L 129.6 32.2 L 126.7 31 L 123.8 29.9 L 120.9 29 L 117.9 28.2 L 114.9 27.5 L 111.9 27 L 108.8 26.5 L 105.8 26.2 L 102.7 26 L 99.6 26 L 96.5 26.1 L 93.5 26.3 L 90.4 26.6 L 87.3 27.1 L 84.3 27.7 L 81.3 28.4 L 78.4 29.2 L 77.6 41.7 L 80.1 40.7 L 82.7 39.9 L 85.4 39.1 L 88.3 38.4 L 91.2 37.8 L 94.3 37.4 L 97.4 37 L 100.6 36.8 L 103.9 36.8 L 107.2 36.9 L 110.5 37.2 L 113.8 37.7 L 117.1 38.3 L 120.4 39.1 L 123.6 40.1 L 126.8 41.3 L 129.9 42.6 L 132.8 44.1 L 135.7 45.7 L 138.4 47.5 L 141 49.3 L 143.5 51.3 L 145.8 53.3 L 147.9 55.4 L 149.8 57.5 L 151.6 59.7 Z" fill="#F4F5F7"/><path d="M 63 35.9 L 58 39.1 L 53.2 42.7 L 48.7 46.6 L 44.6 50.9 L 40.8 55.5 L 37.5 60.4 L 34.5 65.6 L 31.9 71 L 29.8 76.6 L 28.2 82.3 L 27 88.1 L 26.2 94 L 26 100 L 26.2 106 L 27 111.9 L 28.2 117.7 L 29.8 123.4 L 31.9 129 L 34.5 134.4 L 37.5 139.6 L 40.8 144.5 L 44.6 149.1 L 48.7 153.4 L 53.2 157.3 L 58 160.9 L 63 164.1 L 65.2 150.7 L 61.2 147.7 L 57.6 144.6 L 54.3 141.1 L 51.3 137.5 L 48.6 133.8 L 46.2 129.8 L 44.2 125.8 L 42.4 121.6 L 41 117.4 L 39.9 113.1 L 39.1 108.8 L 38.7 104.4 L 38.5 100 L 38.7 95.6 L 39.1 91.2 L 39.9 86.9 L 41 82.6 L 42.4 78.4 L 44.2 74.2 L 46.2 70.2 L 48.6 66.2 L 51.3 62.5 L 54.3 58.9 L 57.6 55.4 L 61.2 52.3 L 65.2 49.3 Z" fill="#037A68"/><path d="M 152.3 152.3 L 150.1 154.5 L 147.8 156.5 L 145.4 158.4 L 142.9 160.3 L 140.4 162 L 137.8 163.6 L 135.1 165.2 L 132.4 166.6 L 129.6 167.8 L 126.7 169 L 123.8 170.1 L 120.9 171 L 117.9 171.8 L 114.9 172.5 L 111.9 173 L 108.8 173.5 L 105.8 173.8 L 102.7 174 L 99.6 174 L 96.5 173.9 L 93.5 173.7 L 90.4 173.4 L 87.3 172.9 L 84.3 172.3 L 81.3 171.6 L 78.4 170.8 L 77.6 158.3 L 80.1 159.3 L 82.7 160.1 L 85.4 160.9 L 88.3 161.6 L 91.2 162.2 L 94.3 162.6 L 97.4 163 L 100.6 163.2 L 103.9 163.2 L 107.2 163.1 L 110.5 162.8 L 113.8 162.3 L 117.1 161.7 L 120.4 160.9 L 123.6 159.9 L 126.8 158.7 L 129.9 157.4 L 132.8 155.9 L 135.7 154.3 L 138.4 152.5 L 141 150.7 L 143.5 148.7 L 145.8 146.7 L 147.9 144.6 L 149.8 142.5 L 151.6 140.3 Z" fill="#F4F5F7"/></svg>Nick Comeaux</a>
     <a href="#" onclick="window.print();return false;">Save as PDF / Print</a>
   </div>
 
   <div class="page">
     <header class="r">
       <h1>Nicholas Comeaux</h1>
-      <div class="title">Systems &amp; AI Engineer · Founder, Soltreya</div>
+      <div class="title">Systems Engineer · Active U.S. Security Clearance</div>
       <div class="contact">
         <span>Huntsville, AL</span>
         <a href="mailto:nicholascomeaux00@gmail.com">nicholascomeaux00@gmail.com</a>
         <a href="https://www.linkedin.com/in/nicholas-comeaux">linkedin.com/in/nicholas-comeaux</a>
-        <a href="https://soltreya.com">soltreya.com</a>
+        <a href="https://github.com/Ncomeaux3">github.com/Ncomeaux3</a>
       </div>
-      <p class="summary">
-        Systems and industrial engineer turned AI builder with operational experience at Tesla and Boeing and $7.4M+ in
-        documented savings. I design and deploy agentic AI systems that run in production, on a multi-agent automation
-        framework I architected from scratch. Seeking a founding-engineer role.
-      </p>
     </header>
 
     <h2 class="sec">Experience</h2>
 
-    <div class="role"><div class="l"><b>Founder &amp; Lead Engineer</b>, <span class="org">Soltreya</span></div><div class="when">Mar 2026 - Present</div></div>
+    <div class="role"><div class="l"><b>Systems Engineer II, Scrum Master</b>, <span class="org">Boeing Intelligence &amp; Analytics</span></div><div class="when">Oct 2024 - Present</div></div>
     <ul class="b">
-      <li>Architected the WAT framework (Workflows, Agents, Tools) so multi-step AI runs unattended without compounding errors: I scope Claude to the judgment calls and keep execution in deterministic Python I wrote.</li>
-      <li>Run the company on it in production: ~4,000 scheduled and event-driven runs/month on Trigger.dev, a Claude orchestrator routing to 7 specialist agents, 40+ Python tools, and 17 TypeScript background jobs.</li>
-      <li>Built the product (Next.js, Supabase, Stripe) to a 100 Lighthouse score with zero accessibility violations, behind a four-gate security model (rate limiting, auth, tenant isolation, cost caps); integrated 10+ external APIs.</li>
+      <li>Built an Integrated Program Tracker that uses Power Query to roll 10+ engineering teams' status and escalations into one dashboard for weekly leadership reviews; escalations went from untracked to 20+ and assigned actions from almost none to 8 in its first two weeks.</li>
+      <li>Coordinate systems integration across 3 partner companies and 6 government organizations, running the Agile process as Scrum Master for an 8-person engineering team through technical syncs and milestone reviews.</li>
+      <li>Built the technical integration team's Authoritative Data Source, the single record of status, dates, and owners for 48 integration activities, self-service for the 8-person team, cutting executive briefing prep 67% and feeding automated KPI dashboards.</li>
+      <li>Own the program's Detailed Action Plan: a 200+ step, multi-year process flow agreed with 3 companies and 6 government organizations to sequence parallel work and catch schedule conflicts.</li>
+      <li>Built a Qlik Sense dashboard giving chief engineers across those organizations a live view of integration risk, taking findings from untracked to 50+ tracked to resolution. One of 3 finalists in a business-unit-wide innovation competition for it, demoed live to the executives judging.</li>
+      <li>Defined the compliance assessment process across both sides of the interface for 336+ requirements, standardizing how each side verifies, documents, and reports.</li>
     </ul>
 
-    <div class="role"><div class="l"><b>Systems Engineer II</b>, <span class="org">Boeing Intelligence &amp; Analytics</span></div><div class="when">Oct 2024 - Present</div></div>
+    <div class="role"><div class="l"><b>Industrial Engineering Material Flow Intern</b>, <span class="org">Tesla</span></div><div class="when">Jan 2023 - Aug 2023</div></div>
     <ul class="b">
-      <li>Keep an 8-person engineering program across 3 partner companies on schedule as Scrum Master, surfacing interface risk early through technical syncs, milestone reviews, and GitLab workflows.</li>
-      <li>Cut executive briefing prep time 67% by designing the program's authoritative data source (40 integration activities, 6 partner teams) with automated KPI dashboards.</li>
-      <li>Shipped a Qlik Sense dashboard giving chief engineers across 3 companies a single live view of integration risk (20+ findings tracked).</li>
+      <li>Built and validated material-flow models for 3 production shops and 250+ parts in Revit and AutoCAD, raising lineside part buy-off from 54% to 95% through validation meetings with ergonomics, mechanical, packaging, and production control engineers.</li>
+      <li>Identified dock allocations that cut storage requirements 66% and saved $3.4M, and redesigned JIT delivery routes for a new line, cutting $4M/yr in operating expense and freeing 16,000 sq ft.</li>
     </ul>
 
-    <div class="role"><div class="l"><b>Industrial Engineering Intern, Material Flow</b>, <span class="org">Tesla</span></div><div class="when">Jan 2023 - Aug 2023</div></div>
+    <div class="role"><div class="l"><b>Industrial Engineering Intern</b>, <span class="org">Alpha Measurement Solutions</span></div><div class="when">May 2022 - Aug 2022</div></div>
     <ul class="b">
-      <li>Identified $3.4M in dock-allocation savings and cut storage 66%; redesigned delivery routes for $4M/yr additional OPEX reduction, freeing 16,000 sq ft.</li>
-      <li>Built material-flow models for 3 shops (250+ parts) in Revit and AutoCAD; raised lineside part buy-off rate from 54% to 95% through cross-functional process redesign.</li>
+      <li>Cut average pick time 25% by pulling historical usage from ALERE ERP, running an ABC analysis to rank parts by running volume, and reslotting the highest-running parts closer to the pick face.</li>
+      <li>Created the processes and work instructions that doubled production, adding 5,000 units/month, established 5S lean workspaces across shipping and the raw material warehouse, and implemented RMA tracking for nonconforming parts.</li>
     </ul>
 
-    <div class="role"><div class="l"><b>Senior Capstone</b>, <span class="org">Texas A&amp;M × CHRISTUS Health</span></div><div class="when">2024</div></div>
+    <div class="role"><div class="l"><b>Special Projects Intern</b>, <span class="org">Alpha Measurement Solutions</span></div><div class="when">Jun 2021 - Aug 2021</div></div>
     <ul class="b">
-      <li>Automated an inpatient therapy department's daily productivity reporting (Excel/VBA), cutting supervisor reporting time 66% (90 to 30 min) and eliminating manual calculation errors.</li>
+      <li>Ran the warehouse's inventory transactions in ALERE ERP, and moved raw material out to the production shops, logging every movement.</li>
+    </ul>
+
+    <h2 class="sec">Projects</h2>
+
+    <div class="role"><div class="l"><b>Holon - Personal Operating System</b>, <span class="org">Personal project</span></div><div class="when">Sep 2026 - Present</div></div>
+    <ul class="b">
+      <li>Architected an MCP server that gives Claude tools across my finances, calendar, email, and documents, behind a propose-and-approve gate: every AI write is held as a proposal with a diff, confidence score, and evidence until I approve it.</li>
+      <li>Built hybrid search across every record, combining pgvector embeddings with Postgres full-text through reciprocal rank fusion, so a query matches by meaning and exact term.</li>
+    </ul>
+
+    <div class="role"><div class="l"><b>Soltreya - AI Quality Management Platform</b>, <span class="org">Personal project</span></div><div class="when">Mar 2026 - Jun 2026</div></div>
+    <ul class="b">
+      <li>Built the Quality Actions Hub, an 8-screen app that takes a quality event from intake through corrective action (CAR/SCAR) closure, for manufacturers under IATF 16949, AS9100, and ISO 9001.</li>
+      <li>Architected the WAT framework (Workflows, Agents, Tools) so chained AI errors could not compound, with deterministic Python tools executing every step.</li>
+      <li>Ran ~4,000 jobs per month unattended, with retry and exception handling on its external API calls.</li>
     </ul>
 
     <div class="two">
       <div>
         <h2 class="sec">Education</h2>
         <div class="role"><div class="l"><b>B.S. Industrial &amp; Systems Engineering</b></div></div>
-        <div style="font-size:12.8px;color:#2a2e38;">Texas A&amp;M University, College Station, TX · 2024</div>
-        <h2 class="sec">Certifications</h2>
-        <div style="font-size:12.8px;color:#2a2e38;">Lean Six Sigma Green Belt</div>
+        <div style="font-size:12.8px;color:#3A3D44;">Texas A&amp;M University, College Station, TX · 2024</div>
+        <ul class="b">
+          <li><b>Capstone (CHRISTUS Health):</b> Automated the Inpatient Therapy department's daily productivity reporting, cutting supervisor time 66% (90 to 30 min) and eliminating manual calculation errors.</li>
+        </ul>
+        <h2 class="sec">Credentials</h2>
+        <div style="font-size:12.8px;color:#3A3D44;">U.S. Citizen · Active U.S. Security Clearance · Lean Six Sigma Green Belt · Data Center Operations Certificate, Texas A&amp;M</div>
+        <h2 class="sec">Leadership &amp; Awards</h2>
+        <ul class="b" style="margin-top:0;">
+          <li><b>Innovation Competition Finalist</b>, Boeing Intelligence &amp; Analytics (Q2 2026); one of 3 finalists business-unit-wide, demoed the integration-findings dashboard live to executive stakeholders</li>
+          <li><b>Eagle Scout</b>, Boy Scouts of America</li>
+          <li><b>Secretary</b>, Pi Kappa Phi, Texas A&amp;M (2021-2022); implemented attendance, event, and recruitment systems</li>
+        </ul>
       </div>
       <div>
         <h2 class="sec">Skills</h2>
         <div class="skills-grid">
+          <div><b>Code:</b> Python, TypeScript, JavaScript, SQL, VBA</div>
           <div><b>AI:</b> Claude API, multi-agent orchestration, prompt engineering</div>
-          <div><b>Code:</b> Python, TypeScript, SQL, VBA, MATLAB</div>
-          <div><b>Infra:</b> Next.js, Vercel, Supabase, Trigger.dev, Stripe, Sentry</div>
-          <div><b>Process:</b> Lean Six Sigma (Green Belt), process improvement, corrective-action workflows</div>
-          <div><b>Systems:</b> Systems engineering, Scrum, Qlik Sense, risk mgmt</div>
-          <div><b>CAD:</b> SolidWorks, AutoCAD, Revit, CATIA, SIMIO</div>
+          <div><b>Infra:</b> Next.js / React, Vercel, Supabase / Postgres, Trigger.dev, Stripe, Sentry</div>
+          <div><b>Automation &amp; BI:</b> n8n, Power Automate, Google Apps Script, Qlik Sense, Power BI, Excel (Power Query, VBA)</div>
+          <div><b>Systems:</b> Systems integration, requirements &amp; interface management, Scrum/Agile, risk management, JIRA, GitLab, Azure DevOps</div>
+          <div><b>Process:</b> Lean Six Sigma (Green Belt), process improvement, material flow, ABC analysis, 5S lean, corrective action (CAR/SCAR)</div>
+          <div><b>Modeling:</b> AutoCAD, Revit, SIMIO (coursework)</div>
+          <div><b>ERP:</b> ALERE (transactions &amp; reporting)</div>
         </div>
       </div>
     </div>
   </div>
+<!-- Vercel Web Analytics (first-party, no cookies). -->
+<script>window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };</script>
+<script defer src="/_vercel/insights/script.js"></script>
 </body>
 </html>
